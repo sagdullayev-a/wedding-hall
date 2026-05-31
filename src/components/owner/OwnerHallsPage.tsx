@@ -3,17 +3,22 @@
 import { useEffect, useState } from 'react'
 import { useAppStore } from '@/lib/store'
 import { api } from '@/lib/api'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Progress } from '@/components/ui/progress'
 import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select'
+import {
   Building2, Plus, MapPin, Users, DollarSign, CheckCircle, Clock, Home,
-  Sparkles, ArrowRight, Eye, FileEdit
+  Sparkles, ArrowRight, Eye, FileEdit, TrendingUp, BarChart3, Wallet,
+  CalendarDays
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 interface HallImage {
   imageId: string
@@ -48,10 +53,44 @@ export default function OwnerHallsPage() {
   const [halls, setHalls] = useState<Hall[]>([])
   const [loading, setLoading] = useState(true)
 
+  // Revenue analytics state
+  const [revenueData, setRevenueData] = useState<{
+    totalRevenue: number
+    totalAdvance: number
+    totalBookings: number
+    upcomingBookings: number
+    completedBookings: number
+    expenses: number
+    profit: number
+    monthlyData: { month: string; revenue: number; bookings: number }[]
+    topHalls: { hallId: string; name: string; revenue: number; bookings: number }[]
+  } | null>(null)
+  const [revenueLoading, setRevenueLoading] = useState(false)
+  const [revenueMonths, setRevenueMonths] = useState('6')
+  const [showRevenue, setShowRevenue] = useState(false)
+
   useEffect(() => {
     api.setToken(token)
     loadHalls()
   }, [token])
+
+  useEffect(() => {
+    if (showRevenue && token) {
+      loadRevenue()
+    }
+  }, [showRevenue, token, revenueMonths])
+
+  const loadRevenue = async () => {
+    try {
+      setRevenueLoading(true)
+      const data = await api.getOwnerRevenue({ months: revenueMonths })
+      setRevenueData(data)
+    } catch {
+      // Silently handle - revenue analytics is optional
+    } finally {
+      setRevenueLoading(false)
+    }
+  }
 
   const loadHalls = async () => {
     try {
@@ -179,6 +218,156 @@ export default function OwnerHallsPage() {
                 <p className="text-xl font-bold">{new Intl.NumberFormat('uz-UZ').format(totalCapacity)}</p>
               </div>
             </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Revenue Analytics Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="mb-6"
+        >
+          <Card className="border-0 dark:border dark:border-rose-900/20 shadow-md bg-white dark:bg-card overflow-hidden">
+            <CardHeader className="pb-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-rose-500" />
+                  Revenue Analytics
+                </CardTitle>
+                <div className="flex items-center gap-2">
+                  <Select value={revenueMonths} onValueChange={setRevenueMonths}>
+                    <SelectTrigger className="w-32 h-8 text-xs border-rose-200 dark:border-rose-800">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="3">3 months</SelectItem>
+                      <SelectItem value="6">6 months</SelectItem>
+                      <SelectItem value="12">12 months</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowRevenue(!showRevenue)}
+                    className="border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-400 text-xs"
+                  >
+                    {showRevenue ? 'Hide' : 'Show'}
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            {showRevenue && (
+              <CardContent className="pt-0">
+                {revenueLoading ? (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-20 rounded-xl" />)}
+                    </div>
+                    <Skeleton className="h-64 rounded-xl" />
+                  </div>
+                ) : revenueData ? (
+                  <div className="space-y-4">
+                    {/* Revenue Stats Cards */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="p-3 rounded-xl bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/10 border border-rose-100 dark:border-rose-900/30">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Wallet className="w-4 h-4 text-rose-500" />
+                          <span className="text-xs text-muted-foreground">Total Revenue</span>
+                        </div>
+                        <p className="text-lg font-bold text-rose-600 dark:text-rose-400">{formatPrice(revenueData.totalRevenue)}</p>
+                      </div>
+                      <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/10 border border-emerald-100 dark:border-emerald-900/30">
+                        <div className="flex items-center gap-2 mb-1">
+                          <TrendingUp className="w-4 h-4 text-emerald-500" />
+                          <span className="text-xs text-muted-foreground">Profit</span>
+                        </div>
+                        <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">{formatPrice(revenueData.profit)}</p>
+                      </div>
+                      <div className="p-3 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/10 border border-amber-100 dark:border-amber-900/30">
+                        <div className="flex items-center gap-2 mb-1">
+                          <CalendarDays className="w-4 h-4 text-amber-500" />
+                          <span className="text-xs text-muted-foreground">Bookings</span>
+                        </div>
+                        <p className="text-lg font-bold text-amber-600 dark:text-amber-400">{revenueData.totalBookings}</p>
+                      </div>
+                      <div className="p-3 rounded-xl bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-800/30 dark:to-slate-800/20 border border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center gap-2 mb-1">
+                          <DollarSign className="w-4 h-4 text-gray-500" />
+                          <span className="text-xs text-muted-foreground">Expenses</span>
+                        </div>
+                        <p className="text-lg font-bold text-gray-600 dark:text-gray-400">{formatPrice(revenueData.expenses)}</p>
+                      </div>
+                    </div>
+
+                    {/* Monthly Revenue Chart */}
+                    {revenueData.monthlyData.length > 0 && (
+                      <div className="h-64 rounded-xl bg-gradient-to-br from-rose-50/50 to-amber-50/50 dark:from-rose-900/10 dark:to-amber-900/5 p-4">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <AreaChart data={revenueData.monthlyData}>
+                            <defs>
+                              <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#e11d48" stopOpacity={0.3} />
+                                <stop offset="95%" stopColor="#e11d48" stopOpacity={0} />
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#fecdd3" />
+                            <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="#f43f5e" />
+                            <YAxis tick={{ fontSize: 11 }} stroke="#f43f5e" />
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: 'rgba(255,255,255,0.95)',
+                                border: '1px solid #fecdd3',
+                                borderRadius: '12px',
+                                fontSize: '12px',
+                              }}
+                              formatter={(value: number) => [formatPrice(value), 'Revenue']}
+                            />
+                            <Area
+                              type="monotone"
+                              dataKey="revenue"
+                              stroke="#e11d48"
+                              strokeWidth={2}
+                              fill="url(#revenueGradient)"
+                            />
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      </div>
+                    )}
+
+                    {/* Top Halls by Revenue */}
+                    {revenueData.topHalls.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-semibold mb-2 text-gray-700 dark:text-muted-foreground">Top Halls by Revenue</h4>
+                        <div className="space-y-2">
+                          {revenueData.topHalls.map((hall, idx) => (
+                            <div key={hall.hallId} className="flex items-center gap-3 p-2.5 rounded-lg bg-rose-50/50 dark:bg-rose-900/10 border border-rose-100/50 dark:border-rose-900/20">
+                              <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                                idx === 0 ? 'bg-amber-500 text-white' :
+                                idx === 1 ? 'bg-gray-400 text-white' :
+                                'bg-amber-700 text-white'
+                              }`}>
+                                {idx + 1}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium truncate">{hall.name}</p>
+                                <p className="text-xs text-muted-foreground">{hall.bookings} bookings</p>
+                              </div>
+                              <span className="text-sm font-semibold text-rose-600 dark:text-rose-400">{formatPrice(hall.revenue)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <BarChart3 className="w-12 h-12 mx-auto text-rose-200 dark:text-rose-700 mb-3" />
+                    <p>Unable to load revenue data</p>
+                  </div>
+                )}
+              </CardContent>
+            )}
           </Card>
         </motion.div>
 

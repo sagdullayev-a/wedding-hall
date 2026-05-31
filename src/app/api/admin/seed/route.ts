@@ -409,6 +409,26 @@ export async function POST(request: Request) {
       ],
     });
 
+    // Create sample notifications
+    await db.notification.createMany({
+      data: [
+        { userId: customer1.userId, title: 'Booking Confirmed!', message: "Your booking at Saroy To'yi for August 15, 2025 has been confirmed.", type: 'booking', isRead: false },
+        { userId: customer1.userId, title: 'Upcoming Wedding Reminder', message: "Your wedding at Oltin Toj is in 2 weeks. Don't forget to confirm the menu!", type: 'booking', isRead: false },
+        { userId: customer1.userId, title: 'Welcome to Wedding Hall!', message: 'Thank you for joining our platform. Browse halls and book your dream venue!', type: 'system', isRead: true },
+        { userId: customer1.userId, title: 'New Hall Available', message: 'A new premium hall has been listed in Tashkent. Check it out!', type: 'info', isRead: false },
+        { userId: owner1.userId, title: 'New Booking Received', message: 'You have a new booking for Saroy To\'yi on August 15, 2025.', type: 'booking', isRead: false },
+        { userId: owner1.userId, title: 'Hall Approved', message: "Your hall Saroy To'yi has been approved and is now visible to customers.", type: 'approval', isRead: true },
+        { userId: owner1.userId, title: 'Hall Approved', message: 'Your hall Gulnora Zali has been approved and is now visible to customers.', type: 'approval', isRead: true },
+        { userId: owner2.userId, title: 'Hall Under Review', message: "Your hall Navro'z Saroyi is currently under review. We'll notify you once it's approved.", type: 'approval', isRead: false },
+        { userId: owner2.userId, title: 'Hall Approved', message: 'Your hall Oltin Toj has been approved and is now visible to customers.', type: 'approval', isRead: true },
+        { userId: admin.userId, title: 'New Hall Pending Approval', message: "Navro'z Saroyi submitted by Dilshod Rahimov requires your review.", type: 'approval', isRead: false },
+        { userId: admin.userId, title: 'New Owner Registered', message: 'Dilshod Rahimov has registered as a hall owner.', type: 'system', isRead: true },
+        { userId: admin.userId, title: 'Platform Stats Update', message: '5 bookings completed this month. Revenue is up 15% compared to last month.', type: 'info', isRead: false },
+        { userId: customer2.userId, title: 'Welcome to Wedding Hall!', message: 'Thank you for joining our platform. Start browsing wedding halls today!', type: 'system', isRead: false },
+        { userId: customer3.userId, title: 'Welcome to Wedding Hall!', message: 'Thank you for joining our platform. Find the perfect venue for your special day!', type: 'system', isRead: false },
+      ],
+    });
+
     return NextResponse.json({
       message: 'Seed data created successfully',
       counts: {
@@ -422,6 +442,7 @@ export async function POST(request: Request) {
         bookingServices: 13,
         reviews: 9,
         favorites: 2,
+        notifications: 14,
       },
       credentials: {
         admin: { username: 'admin', password: 'admin123' },

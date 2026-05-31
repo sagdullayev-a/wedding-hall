@@ -103,13 +103,13 @@ export default function OtpVerification() {
   // If no otpUserId, redirect to register
   if (!otpUserId) {
     return (
-      <div className="flex min-h-[80vh] items-center justify-center px-4">
-        <Card className="w-full max-w-md border-rose-100 shadow-lg">
+      <div className="flex min-h-[80vh] items-center justify-center px-4 bg-gradient-to-b from-rose-50/50 via-white to-amber-50/50 dark:from-background dark:via-background dark:to-rose-950/10">
+        <Card className="w-full max-w-md border-rose-100 dark:border-rose-900/30 shadow-lg dark:shadow-rose-900/10">
           <CardContent className="p-6 text-center space-y-4">
-            <p className="text-rose-600">No pending verification found.</p>
+            <p className="text-rose-600 dark:text-rose-400">No pending verification found.</p>
             <Button
               onClick={() => navigateTo('register')}
-              className="bg-rose-600 hover:bg-rose-700 text-white"
+              className="bg-rose-600 hover:bg-rose-700 dark:bg-rose-700 dark:hover:bg-rose-600 text-white"
             >
               Go to Register
             </Button>
@@ -120,23 +120,29 @@ export default function OtpVerification() {
   }
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center px-4 py-12">
-      <Card className="w-full max-w-md border-rose-100 shadow-lg">
+    <div className="flex min-h-[80vh] items-center justify-center px-4 py-12 relative">
+      {/* Decorative background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-rose-50 via-white to-amber-50 dark:from-background dark:via-background dark:to-rose-950/20 overflow-hidden pointer-events-none">
+        <div className="absolute -top-32 -right-32 w-64 h-64 bg-rose-200/30 dark:bg-rose-800/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 -left-20 w-56 h-56 bg-amber-200/20 dark:bg-amber-800/10 rounded-full blur-3xl" />
+      </div>
+
+      <Card className="w-full max-w-md border-rose-200 dark:border-rose-900/30 shadow-xl shadow-rose-100/50 dark:shadow-rose-900/20 bg-white dark:bg-card relative">
         <CardHeader className="text-center space-y-2">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-rose-50">
-            <ShieldCheck className="h-7 w-7 text-rose-500" />
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-rose-50 to-amber-50 dark:from-rose-900/30 dark:to-amber-900/30 border border-rose-100 dark:border-rose-800/30">
+            <ShieldCheck className="h-7 w-7 text-rose-500 dark:text-rose-400" />
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight text-rose-900">
+          <CardTitle className="text-2xl font-bold tracking-tight text-rose-900 dark:text-foreground">
             Verify Your Email
           </CardTitle>
-          <CardDescription className="text-rose-600/70">
+          <CardDescription className="text-rose-600/70 dark:text-muted-foreground">
             Enter the 6-digit code sent to your email address
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleVerify} className="space-y-6">
             {error && (
-              <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+              <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/30 p-3 text-sm text-red-700 dark:text-red-400">
                 {error}
               </div>
             )}
@@ -149,35 +155,35 @@ export default function OtpVerification() {
                 disabled={loading}
               >
                 <InputOTPGroup>
-                  <InputOTPSlot index={0} className="h-12 w-12 text-lg border-rose-200 data-[active=true]:border-rose-400 data-[active=true]:ring-rose-400/30" />
-                  <InputOTPSlot index={1} className="h-12 w-12 text-lg border-rose-200 data-[active=true]:border-rose-400 data-[active=true]:ring-rose-400/30" />
-                  <InputOTPSlot index={2} className="h-12 w-12 text-lg border-rose-200 data-[active=true]:border-rose-400 data-[active=true]:ring-rose-400/30" />
+                  <InputOTPSlot index={0} className="h-12 w-12 text-lg border-rose-200 dark:border-rose-800/50 data-[active=true]:border-rose-400 dark:data-[active=true]:border-rose-600 data-[active=true]:ring-rose-400/30 dark:data-[active=true]:ring-rose-600/30 dark:bg-background/50" />
+                  <InputOTPSlot index={1} className="h-12 w-12 text-lg border-rose-200 dark:border-rose-800/50 data-[active=true]:border-rose-400 dark:data-[active=true]:border-rose-600 data-[active=true]:ring-rose-400/30 dark:data-[active=true]:ring-rose-600/30 dark:bg-background/50" />
+                  <InputOTPSlot index={2} className="h-12 w-12 text-lg border-rose-200 dark:border-rose-800/50 data-[active=true]:border-rose-400 dark:data-[active=true]:border-rose-600 data-[active=true]:ring-rose-400/30 dark:data-[active=true]:ring-rose-600/30 dark:bg-background/50" />
                 </InputOTPGroup>
-                <InputOTPSeparator className="text-rose-300" />
+                <InputOTPSeparator className="text-rose-300 dark:text-rose-600" />
                 <InputOTPGroup>
-                  <InputOTPSlot index={3} className="h-12 w-12 text-lg border-rose-200 data-[active=true]:border-rose-400 data-[active=true]:ring-rose-400/30" />
-                  <InputOTPSlot index={4} className="h-12 w-12 text-lg border-rose-200 data-[active=true]:border-rose-400 data-[active=true]:ring-rose-400/30" />
-                  <InputOTPSlot index={5} className="h-12 w-12 text-lg border-rose-200 data-[active=true]:border-rose-400 data-[active=true]:ring-rose-400/30" />
+                  <InputOTPSlot index={3} className="h-12 w-12 text-lg border-rose-200 dark:border-rose-800/50 data-[active=true]:border-rose-400 dark:data-[active=true]:border-rose-600 data-[active=true]:ring-rose-400/30 dark:data-[active=true]:ring-rose-600/30 dark:bg-background/50" />
+                  <InputOTPSlot index={4} className="h-12 w-12 text-lg border-rose-200 dark:border-rose-800/50 data-[active=true]:border-rose-400 dark:data-[active=true]:border-rose-600 data-[active=true]:ring-rose-400/30 dark:data-[active=true]:ring-rose-600/30 dark:bg-background/50" />
+                  <InputOTPSlot index={5} className="h-12 w-12 text-lg border-rose-200 dark:border-rose-800/50 data-[active=true]:border-rose-400 dark:data-[active=true]:border-rose-600 data-[active=true]:ring-rose-400/30 dark:data-[active=true]:ring-rose-600/30 dark:bg-background/50" />
                 </InputOTPGroup>
               </InputOTP>
             </div>
 
             <div className="text-center">
-              <p className="text-sm text-rose-600/70">
+              <p className="text-sm text-rose-600/70 dark:text-muted-foreground">
                 {timeLeft > 0 ? (
                   <>
                     Code expires in{' '}
-                    <span className="font-semibold text-rose-700">{formatTime(timeLeft)}</span>
+                    <span className="font-semibold text-rose-700 dark:text-rose-400">{formatTime(timeLeft)}</span>
                   </>
                 ) : (
-                  <span className="text-red-500 font-medium">Code has expired</span>
+                  <span className="text-red-500 dark:text-red-400 font-medium">Code has expired</span>
                 )}
               </p>
             </div>
 
             <Button
               type="submit"
-              className="w-full bg-rose-600 hover:bg-rose-700 text-white"
+              className="w-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white dark:shadow-lg dark:shadow-rose-900/20"
               disabled={loading || otpCode.length !== 6}
             >
               {loading ? (
@@ -196,7 +202,7 @@ export default function OtpVerification() {
                 variant="ghost"
                 onClick={handleResend}
                 disabled={timeLeft > 0 || resendLoading}
-                className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+                className="text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-900/20"
               >
                 {resendLoading ? (
                   <>

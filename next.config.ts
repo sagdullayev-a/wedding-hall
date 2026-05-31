@@ -7,6 +7,12 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   reactStrictMode: false,
+  allowedDevOrigins: [
+    "http://0.0.0.0:81",
+    "http://localhost:81",
+    "http://21.0.5.144:3000",
+    "http://21.0.5.144:81",
+  ],
 };
 
 export default nextConfig;

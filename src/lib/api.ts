@@ -240,6 +240,59 @@ class ApiClient {
   async getFavorites() {
     return this.request('/favorites')
   }
+
+  // Notifications
+  async getNotifications() {
+    return this.request('/notifications')
+  }
+
+  async markNotificationsRead(ids?: string[], markAll?: boolean) {
+    return this.request('/notifications/read', {
+      method: 'PUT',
+      body: JSON.stringify({ notificationIds: ids, markAll }),
+    })
+  }
+
+  async deleteNotification(id: string) {
+    return this.request(`/notifications/${id}`, { method: 'DELETE' })
+  }
+
+  // Change Password
+  async changePassword(currentPassword: string, newPassword: string) {
+    return this.request('/auth/change-password', {
+      method: 'PUT',
+      body: JSON.stringify({ currentPassword, newPassword }),
+    })
+  }
+
+  // Booking Status Update (Admin)
+  async updateBookingStatus(bookingId: string, status: string) {
+    return this.request(`/bookings/${bookingId}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ status }),
+    })
+  }
+
+  // Owner Revenue
+  async getOwnerRevenue(params?: Record<string, string | number | undefined>) {
+    const searchParams = new URLSearchParams()
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') {
+          searchParams.set(key, String(value))
+        }
+      })
+    }
+    return this.request(`/owner/revenue?${searchParams.toString()}`)
+  }
+
+  // Review Response (Owner)
+  async createReviewResponse(hallId: string, reviewId: string, response: string) {
+    return this.request(`/halls/${hallId}/reviews/${reviewId}/response`, {
+      method: 'POST',
+      body: JSON.stringify({ response }),
+    })
+  }
 }
 
 export const api = new ApiClient()

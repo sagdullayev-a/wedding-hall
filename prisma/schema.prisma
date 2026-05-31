@@ -24,6 +24,7 @@ model User {
   bookings          Booking[]
   reviews           Review[]
   favorites         Favorite[]
+  notifications     Notification[]
 
   @@map("users")
 }
@@ -141,12 +142,14 @@ model BookingService {
 }
 
 model Review {
-  reviewId  String   @id @default(cuid()) @map("review_id")
-  hallId    String   @map("hall_id")
-  userId    String   @map("user_id")
-  rating    Int      // 1-5 stars
-  comment   String?
-  createdAt DateTime @default(now()) @map("created_at")
+  reviewId      String   @id @default(cuid()) @map("review_id")
+  hallId        String   @map("hall_id")
+  userId        String   @map("user_id")
+  rating        Int      // 1-5 stars
+  comment       String?
+  ownerResponse String?  @map("owner_response")
+  respondedAt   DateTime? @map("responded_at")
+  createdAt     DateTime @default(now()) @map("created_at")
 
   hall WeddingHall @relation(fields: [hallId], references: [hallId], onDelete: Cascade)
   user User        @relation(fields: [userId], references: [userId], onDelete: Cascade)
@@ -166,4 +169,18 @@ model Favorite {
 
   @@unique([hallId, userId]) // One favorite per user per hall
   @@map("favorites")
+}
+
+model Notification {
+  notificationId String   @id @default(cuid()) @map("notification_id")
+  userId         String   @map("user_id")
+  title          String
+  message        String
+  type           String   @default("info") // info, booking, approval, system
+  isRead         Boolean  @default(false) @map("is_read")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@map("notifications")
 }

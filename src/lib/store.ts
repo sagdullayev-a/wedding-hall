@@ -21,6 +21,7 @@ export type ViewType =
   | 'admin-bookings'
   | 'favorites'
   | 'profile'
+  | 'compare'
 
 interface User {
   userId: string
@@ -59,6 +60,12 @@ interface AppState {
   // OTP user
   otpUserId: string | null
   setOtpUserId: (userId: string | null) => void
+
+  // Hall comparison
+  compareHallIds: string[]
+  addToCompare: (hallId: string) => void
+  removeFromCompare: (hallId: string) => void
+  clearCompare: () => void
 }
 
 export const useAppStore = create<AppState>()(
@@ -89,6 +96,17 @@ export const useAppStore = create<AppState>()(
       // OTP user
       otpUserId: null,
       setOtpUserId: (userId) => set({ otpUserId: userId }),
+
+      // Hall comparison
+      compareHallIds: [],
+      addToCompare: (hallId) => set((state) => {
+        if (state.compareHallIds.includes(hallId) || state.compareHallIds.length >= 3) return state
+        return { compareHallIds: [...state.compareHallIds, hallId] }
+      }),
+      removeFromCompare: (hallId) => set((state) => ({
+        compareHallIds: state.compareHallIds.filter(id => id !== hallId),
+      })),
+      clearCompare: () => set({ compareHallIds: [] }),
     }),
     {
       name: 'wedding-hall-store',

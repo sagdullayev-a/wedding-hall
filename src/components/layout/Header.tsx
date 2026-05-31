@@ -36,7 +36,9 @@ import {
   Star,
   Moon,
   Sun,
+  GitCompareArrows,
 } from 'lucide-react'
+import NotificationBell from '@/components/notifications/NotificationBell'
 
 function ThemeToggle() {
   const { setTheme, resolvedTheme } = useTheme()
@@ -56,7 +58,7 @@ function ThemeToggle() {
 }
 
 export default function Header() {
-  const { user, token, logout, navigateTo, currentView } = useAppStore()
+  const { user, token, logout, navigateTo, currentView, compareHallIds } = useAppStore()
   const [mobileOpen, setMobileOpen] = useState(false)
 
   // Sync API token with store token
@@ -163,6 +165,25 @@ export default function Header() {
 
         {/* Theme Toggle */}
         <ThemeToggle />
+
+        {/* Notification Bell */}
+        <NotificationBell />
+
+        {/* Compare Badge */}
+        {compareHallIds.length > 0 && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigateTo('compare')}
+            className="relative border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20"
+          >
+            <GitCompareArrows className="w-4 h-4 mr-1.5" />
+            Compare
+            <Badge className="ml-1.5 bg-rose-500 text-white text-[10px] h-4 min-w-4 px-1">
+              {compareHallIds.length}
+            </Badge>
+          </Button>
+        )}
 
         {/* User Menu / Auth Buttons */}
         <div className="flex items-center gap-3">

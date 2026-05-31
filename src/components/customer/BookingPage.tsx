@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, ArrowRight, Calendar, Users, Music, Utensils,
   Car, Check, CreditCard, User, ChevronLeft, ChevronRight,
-  Building2, Sparkles, Loader2, PartyPopper, Star
+  Building2, Sparkles, Loader2, PartyPopper, Star, Phone
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import { api } from '@/lib/api'
@@ -395,11 +395,11 @@ export default function BookingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white max-w-5xl mx-auto px-4 sm:px-6 py-8">
+      <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white dark:from-background dark:to-background max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <div className="animate-pulse space-y-6">
-          <div className="h-8 w-40 bg-rose-100 rounded" />
-          <div className="h-4 w-64 bg-rose-50 rounded" />
-          <div className="h-64 bg-rose-50 rounded-xl" />
+          <div className="h-8 w-40 bg-rose-100 dark:bg-rose-900/20 rounded" />
+          <div className="h-4 w-64 bg-rose-50 dark:bg-rose-900/10 rounded" />
+          <div className="h-64 bg-rose-50 dark:bg-rose-900/10 rounded-xl" />
         </div>
       </div>
     )
@@ -407,10 +407,10 @@ export default function BookingPage() {
 
   if (!hall) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white max-w-5xl mx-auto px-4 sm:px-6 py-8">
-        <Card className="p-12 text-center">
-          <Building2 className="w-16 h-16 mx-auto text-rose-200 mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Hall Not Found</h3>
+      <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white dark:from-background dark:to-background max-w-5xl mx-auto px-4 sm:px-6 py-8">
+        <Card className="p-12 text-center border-rose-100 dark:border-rose-900/30">
+          <Building2 className="w-16 h-16 mx-auto text-rose-200 dark:text-rose-700 mb-4" />
+          <h3 className="text-lg font-semibold mb-2 dark:text-foreground">Hall Not Found</h3>
           <Button onClick={() => navigateTo('halls')} className="bg-rose-500 hover:bg-rose-600 text-white">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Halls
@@ -423,7 +423,7 @@ export default function BookingPage() {
   // Booking Complete Screen
   if (bookingComplete) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white dark:from-background dark:to-background flex items-center justify-center">
         <Confetti />
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
@@ -435,11 +435,11 @@ export default function BookingPage() {
             initial={{ rotate: -10 }}
             animate={{ rotate: 0 }}
             transition={{ delay: 0.3, type: 'spring' }}
-            className="w-24 h-24 bg-gradient-to-br from-rose-400 to-pink-500 rounded-full mx-auto mb-6 flex items-center justify-center shadow-xl shadow-rose-200"
+            className="w-24 h-24 bg-gradient-to-br from-rose-400 to-pink-500 rounded-full mx-auto mb-6 flex items-center justify-center shadow-xl shadow-rose-200 dark:shadow-rose-900/30"
           >
             <PartyPopper className="w-12 h-12 text-white" />
           </motion.div>
-          <h2 className="text-2xl font-bold mb-2">Booking Confirmed!</h2>
+          <h2 className="text-2xl font-bold mb-2 dark:text-foreground">Booking Confirmed!</h2>
           <p className="text-muted-foreground mb-6">
             Your wedding hall has been booked successfully. We&apos;ve sent the details to your phone.
           </p>
@@ -459,7 +459,7 @@ export default function BookingPage() {
                 setSelectedBookingDate(null)
                 navigateTo('halls')
               }}
-              className="w-full border-rose-200 text-rose-600"
+              className="w-full border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-400"
             >
               Browse More Halls
             </Button>
@@ -470,27 +470,27 @@ export default function BookingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white dark:from-background dark:to-background">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
         {/* Back button */}
         <Button
           variant="ghost"
           onClick={() => navigateTo('hall-detail')}
-          className="mb-4 text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+          className="mb-4 text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-900/20"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Hall Details
         </Button>
 
         {/* Hall Info Banner */}
-        <Card className="border-rose-100 mb-6 bg-gradient-to-r from-rose-50 to-amber-50">
+        <Card className="border-rose-100 dark:border-rose-900/30 mb-6 bg-gradient-to-r from-rose-50 to-amber-50 dark:from-rose-950/20 dark:to-amber-950/20">
           <CardContent className="p-4 flex items-center gap-4">
-            <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-rose-100">
+            <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-rose-100 dark:bg-rose-900/30">
               {hall.images?.[0]?.imageUrl ? (
                 <img src={hall.images[0].imageUrl} alt={hall.name} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <Building2 className="w-6 h-6 text-rose-400" />
+                  <Building2 className="w-6 h-6 text-rose-400 dark:text-rose-600" />
                 </div>
               )}
             </div>
@@ -505,7 +505,7 @@ export default function BookingPage() {
         <div className="mb-8">
           <div className="relative flex items-center justify-between mb-3">
             {/* Connecting line behind circles */}
-            <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-100" />
+            <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-100 dark:bg-gray-800" />
             <motion.div
               className="absolute top-5 left-0 h-0.5 bg-gradient-to-r from-rose-500 to-pink-500"
               initial={{ width: 0 }}
@@ -524,7 +524,7 @@ export default function BookingPage() {
                       w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
                       ${isActive ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-lg shadow-rose-200' : ''}
                       ${isCompleted ? 'bg-emerald-500 text-white shadow-md shadow-emerald-100' : ''}
-                      ${!isActive && !isCompleted ? 'bg-white text-gray-400 border-2 border-gray-200' : ''}
+                      ${!isActive && !isCompleted ? 'bg-white dark:bg-card text-gray-400 border-2 border-gray-200 dark:border-gray-700' : ''}
                     `}
                     whileHover={isCompleted ? { scale: 1.1 } : {}}
                   >
@@ -540,7 +540,7 @@ export default function BookingPage() {
                       <step.icon className="w-4 h-4" />
                     )}
                   </motion.div>
-                  <span className={`text-xs font-medium ${isActive ? 'text-rose-600' : isCompleted ? 'text-emerald-600' : 'text-gray-400'}`}>
+                  <span className={`text-xs font-medium ${isActive ? 'text-rose-600 dark:text-rose-400' : isCompleted ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400'}`}>
                     {step.label}
                   </span>
                 </div>
@@ -563,9 +563,9 @@ export default function BookingPage() {
               >
                 {/* Step 1: Select Date */}
                 {currentStep === 1 && (
-                  <Card className="border-rose-100">
+                  <Card className="border-rose-100 dark:border-rose-900/30">
                     <CardContent className="p-6">
-                      <h3 className="text-xl font-bold mb-1">Select Your Date</h3>
+                      <h3 className="text-xl font-bold mb-1 dark:text-foreground">Select Your Date</h3>
                       <p className="text-muted-foreground text-sm mb-6">Choose an available date for your wedding</p>
 
                       <div className="max-w-sm mx-auto">
@@ -573,14 +573,14 @@ export default function BookingPage() {
                           <Button variant="ghost" size="icon" onClick={() => {
                             if (calMonth === 1) { setCalMonth(12); setCalYear(calYear - 1) }
                             else setCalMonth(calMonth - 1)
-                          }} className="h-8 w-8 hover:bg-rose-50">
+                          }} className="h-8 w-8 hover:bg-rose-50 dark:hover:bg-rose-900/20">
                             <ChevronLeft className="w-4 h-4" />
                           </Button>
-                          <h4 className="font-semibold">{MONTH_NAMES[calMonth - 1]} {calYear}</h4>
+                          <h4 className="font-semibold dark:text-foreground">{MONTH_NAMES[calMonth - 1]} {calYear}</h4>
                           <Button variant="ghost" size="icon" onClick={() => {
                             if (calMonth === 12) { setCalMonth(1); setCalYear(calYear + 1) }
                             else setCalMonth(calMonth + 1)
-                          }} className="h-8 w-8 hover:bg-rose-50">
+                          }} className="h-8 w-8 hover:bg-rose-50 dark:hover:bg-rose-900/20">
                             <ChevronRight className="w-4 h-4" />
                           </Button>
                         </div>
@@ -605,10 +605,10 @@ export default function BookingPage() {
                                 whileTap={status === 'available' ? { scale: 0.95 } : {}}
                                 className={`
                                   aspect-square rounded-lg text-sm font-medium flex items-center justify-center transition-all
-                                  ${status === 'available' && !isSelected && 'bg-green-100 text-green-800 hover:bg-green-200 cursor-pointer border border-green-200'}
-                                  ${status === 'available' && isSelected && 'bg-rose-500 text-white cursor-pointer border-2 border-rose-500 shadow-md shadow-rose-200 scale-105'}
-                                  ${status === 'booked' && 'bg-red-100 text-red-800 cursor-not-allowed border border-red-200 line-through'}
-                                  ${status === 'past' && 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'}
+                                  ${status === 'available' && !isSelected && 'bg-green-100 text-green-800 hover:bg-green-200 cursor-pointer border border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800 dark:hover:bg-green-900/30'}
+                                  ${status === 'available' && isSelected && 'bg-rose-500 text-white cursor-pointer border-2 border-rose-500 shadow-md shadow-rose-200 dark:shadow-rose-900/30 scale-105'}
+                                  ${status === 'booked' && 'bg-red-100 text-red-800 cursor-not-allowed border border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800 line-through'}
+                                  ${status === 'past' && 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200 dark:bg-gray-800/30 dark:text-gray-500 dark:border-gray-700'}
                                 `}
                               >
                                 {day}
@@ -619,7 +619,7 @@ export default function BookingPage() {
 
                         <div className="flex items-center gap-3 mt-4 text-xs">
                           <div className="flex items-center gap-1">
-                            <div className="w-3 h-3 rounded bg-green-100 border border-green-200" />
+                            <div className="w-3 h-3 rounded bg-green-100 border border-green-200 dark:bg-green-900/30 dark:border-green-800" />
                             <span className="text-muted-foreground">Available</span>
                           </div>
                           <div className="flex items-center gap-1">
@@ -627,11 +627,11 @@ export default function BookingPage() {
                             <span className="text-muted-foreground">Selected</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <div className="w-3 h-3 rounded bg-red-100 border border-red-200" />
+                            <div className="w-3 h-3 rounded bg-red-100 border border-red-200 dark:bg-red-900/30 dark:border-red-800" />
                             <span className="text-muted-foreground">Booked</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <div className="w-3 h-3 rounded bg-gray-100 border border-gray-200" />
+                            <div className="w-3 h-3 rounded bg-gray-100 border border-gray-200 dark:bg-gray-800 dark:border-gray-700" />
                             <span className="text-muted-foreground">Past</span>
                           </div>
                         </div>
@@ -640,10 +640,10 @@ export default function BookingPage() {
                           <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="mt-4 p-4 bg-gradient-to-r from-rose-50 to-amber-50 rounded-xl border border-rose-100 text-center"
+                            className="mt-4 p-4 bg-gradient-to-r from-rose-50 to-amber-50 dark:from-rose-900/20 dark:to-amber-900/20 rounded-xl border border-rose-100 dark:border-rose-800/30 text-center"
                           >
                             <p className="text-sm text-muted-foreground">Selected Date</p>
-                            <p className="font-bold text-rose-600 text-lg">
+                            <p className="font-bold text-rose-600 dark:text-rose-400 text-lg">
                               {new Date(bookingDate + 'T00:00:00').toLocaleDateString('en-US', {
                                 weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                               })}
@@ -657,9 +657,9 @@ export default function BookingPage() {
 
                 {/* Step 2: Guest Count */}
                 {currentStep === 2 && (
-                  <Card className="border-rose-100">
+                  <Card className="border-rose-100 dark:border-rose-900/30">
                     <CardContent className="p-6">
-                      <h3 className="text-xl font-bold mb-1">Enter Guest Count</h3>
+                      <h3 className="text-xl font-bold mb-1 dark:text-foreground">Enter Guest Count</h3>
                       <p className="text-muted-foreground text-sm mb-6">
                         Hall capacity: {hall.capacity} guests
                       </p>
@@ -700,7 +700,7 @@ export default function BookingPage() {
                               className={
                                 guestNum === num
                                   ? 'bg-rose-500 text-white border-rose-500'
-                                  : 'border-rose-200 text-rose-600 hover:bg-rose-50'
+                                  : 'border-rose-200 text-rose-600 hover:bg-rose-50 dark:border-rose-800 dark:text-rose-400 dark:hover:bg-rose-900/20'
                               }
                             >
                               {num}
@@ -709,7 +709,7 @@ export default function BookingPage() {
                         </div>
 
                         {guestNum > 0 && guestNum <= hall.capacity && (
-                          <Card className="bg-gradient-to-r from-rose-50 to-amber-50 border-rose-100">
+                          <Card className="bg-gradient-to-r from-rose-50 to-amber-50 dark:from-rose-900/20 dark:to-amber-900/20 border-rose-100 dark:border-rose-800/30">
                             <CardContent className="p-4">
                               <div className="space-y-2">
                                 <div className="flex justify-between text-sm">
@@ -720,10 +720,10 @@ export default function BookingPage() {
                                   <span className="text-muted-foreground">Guest count</span>
                                   <span>× {guestNum}</span>
                                 </div>
-                                <Separator className="bg-rose-200" />
+                                <Separator className="bg-rose-200 dark:bg-rose-800/50" />
                                 <div className="flex justify-between font-semibold">
                                   <span>Base Price</span>
-                                  <span className="text-rose-600">{formatPrice(basePrice)}</span>
+                                  <span className="text-rose-600 dark:text-rose-400">{formatPrice(basePrice)}</span>
                                 </div>
                               </div>
                             </CardContent>
@@ -736,9 +736,9 @@ export default function BookingPage() {
 
                 {/* Step 3: Select Services */}
                 {currentStep === 3 && (
-                  <Card className="border-rose-100">
+                  <Card className="border-rose-100 dark:border-rose-900/30">
                     <CardContent className="p-6">
-                      <h3 className="text-xl font-bold mb-1">Select Optional Services</h3>
+                      <h3 className="text-xl font-bold mb-1 dark:text-foreground">Select Optional Services</h3>
                       <p className="text-muted-foreground text-sm mb-6">
                         Enhance your wedding with these additional services
                       </p>
@@ -756,8 +756,8 @@ export default function BookingPage() {
                               whileTap={{ scale: 0.99 }}
                               className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-colors ${
                                 includeKarnaySurnay
-                                  ? 'border-rose-300 bg-rose-50'
-                                  : 'border-rose-100 hover:bg-rose-50/50'
+                                  ? 'border-rose-300 bg-rose-50 dark:border-rose-600 dark:bg-rose-900/20'
+                                  : 'border-rose-100 dark:border-rose-800/30 hover:bg-rose-50/50 dark:hover:bg-rose-900/10'
                               }`}
                               onClick={() => setIncludeKarnaySurnay(!includeKarnaySurnay)}
                             >
@@ -948,43 +948,52 @@ export default function BookingPage() {
 
                 {/* Step 4: Personal Info */}
                 {currentStep === 4 && (
-                  <Card className="border-rose-100">
+                  <Card className="border-rose-100 dark:border-rose-900/30">
                     <CardContent className="p-6">
-                      <h3 className="text-xl font-bold mb-1">Enter Your Information</h3>
+                      <h3 className="text-xl font-bold mb-1 dark:text-foreground">Enter Your Information</h3>
                       <p className="text-muted-foreground text-sm mb-6">
                         We need your contact details for the booking
                       </p>
 
                       <div className="max-w-md mx-auto space-y-4">
                         <div>
-                          <Label htmlFor="firstName">First Name</Label>
-                          <Input
-                            id="firstName"
-                            placeholder="Enter your first name"
-                            value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
-                            className="mt-1.5"
-                          />
+                          <Label htmlFor="firstName" className="dark:text-foreground">First Name</Label>
+                          <div className="relative mt-1.5">
+                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-rose-400 dark:text-rose-500" />
+                            <Input
+                              id="firstName"
+                              placeholder="Enter your first name"
+                              value={firstName}
+                              onChange={(e) => setFirstName(e.target.value)}
+                              className="pl-10 border-rose-200 dark:border-rose-800/50 dark:bg-background/50 dark:text-foreground"
+                            />
+                          </div>
                         </div>
                         <div>
-                          <Label htmlFor="lastName">Last Name</Label>
-                          <Input
-                            id="lastName"
-                            placeholder="Enter your last name"
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
-                            className="mt-1.5"
-                          />
+                          <Label htmlFor="lastName" className="dark:text-foreground">Last Name</Label>
+                          <div className="relative mt-1.5">
+                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-rose-400 dark:text-rose-500" />
+                            <Input
+                              id="lastName"
+                              placeholder="Enter your last name"
+                              value={lastName}
+                              onChange={(e) => setLastName(e.target.value)}
+                              className="pl-10 border-rose-200 dark:border-rose-800/50 dark:bg-background/50 dark:text-foreground"
+                            />
+                          </div>
                         </div>
                         <div>
-                          <Label htmlFor="phone">Phone Number</Label>
-                          <Input
-                            id="phone"
-                            placeholder="+998 90 123 45 67"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            className="mt-1.5"
-                          />
+                          <Label htmlFor="phone" className="dark:text-foreground">Phone Number</Label>
+                          <div className="relative mt-1.5">
+                            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-rose-400 dark:text-rose-500" />
+                            <Input
+                              id="phone"
+                              placeholder="+998 90 123 45 67"
+                              value={phone}
+                              onChange={(e) => setPhone(e.target.value)}
+                              className="pl-10 border-rose-200 dark:border-rose-800/50 dark:bg-background/50 dark:text-foreground"
+                            />
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -993,9 +1002,9 @@ export default function BookingPage() {
 
                 {/* Step 5: Review & Payment */}
                 {currentStep === 5 && (
-                  <Card className="border-rose-100">
+                  <Card className="border-rose-100 dark:border-rose-900/30">
                     <CardContent className="p-6">
-                      <h3 className="text-xl font-bold mb-1">Review & Payment</h3>
+                      <h3 className="text-xl font-bold mb-1 dark:text-foreground">Review & Payment</h3>
                       <p className="text-muted-foreground text-sm mb-6">
                         Please review your booking details before payment
                       </p>
@@ -1003,37 +1012,108 @@ export default function BookingPage() {
                       <div className="space-y-4">
                         {/* Booking Summary */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div className="p-3 rounded-xl bg-rose-50/50 border border-rose-100">
+                          <div className="p-3 rounded-xl bg-rose-50/50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-800/30">
                             <p className="text-xs text-muted-foreground mb-1">Wedding Hall</p>
-                            <p className="font-semibold">{hall.name}</p>
+                            <p className="font-semibold dark:text-foreground">{hall.name}</p>
                             <p className="text-sm text-muted-foreground">{hall.district}</p>
                           </div>
-                          <div className="p-3 rounded-xl bg-rose-50/50 border border-rose-100">
+                          <div className="p-3 rounded-xl bg-rose-50/50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-800/30">
                             <p className="text-xs text-muted-foreground mb-1">Date</p>
-                            <p className="font-semibold">
+                            <p className="font-semibold dark:text-foreground">
                               {new Date(bookingDate + 'T00:00:00').toLocaleDateString('en-US', {
                                 weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                               })}
                             </p>
                           </div>
-                          <div className="p-3 rounded-xl bg-rose-50/50 border border-rose-100">
+                          <div className="p-3 rounded-xl bg-rose-50/50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-800/30">
                             <p className="text-xs text-muted-foreground mb-1">Guest Count</p>
-                            <p className="font-semibold">{guestNum} guests</p>
+                            <p className="font-semibold dark:text-foreground">{guestNum} guests</p>
                           </div>
-                          <div className="p-3 rounded-xl bg-rose-50/50 border border-rose-100">
+                          <div className="p-3 rounded-xl bg-rose-50/50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-800/30">
                             <p className="text-xs text-muted-foreground mb-1">Contact</p>
-                            <p className="font-semibold">{firstName} {lastName}</p>
+                            <p className="font-semibold dark:text-foreground">{firstName} {lastName}</p>
                             <p className="text-sm text-muted-foreground">{phone}</p>
+                          </div>
+                        </div>
+
+                        {/* Price Breakdown with visual bars */}
+                        <div className="p-4 rounded-xl bg-gradient-to-r from-amber-50/50 to-rose-50/50 dark:from-amber-900/10 dark:to-rose-900/10 border border-amber-100 dark:border-amber-800/30">
+                          <p className="text-xs text-muted-foreground mb-3">Price Breakdown</p>
+                          <div className="space-y-2.5">
+                            {basePrice > 0 && (
+                              <div>
+                                <div className="flex justify-between text-sm mb-1">
+                                  <span className="text-muted-foreground">Base ({guestNum} guests)</span>
+                                  <span className="font-medium dark:text-foreground">{formatPrice(basePrice)}</span>
+                                </div>
+                                <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                  <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${totalPrice > 0 ? (basePrice / totalPrice) * 100 : 0}%` }}
+                                    transition={{ duration: 0.5, ease: 'easeOut' }}
+                                    className="h-full bg-gradient-to-r from-rose-400 to-rose-500 rounded-full"
+                                  />
+                                </div>
+                              </div>
+                            )}
+                            {singersTotal > 0 && (
+                              <div>
+                                <div className="flex justify-between text-sm mb-1">
+                                  <span className="text-muted-foreground">Singers</span>
+                                  <span className="font-medium dark:text-foreground">{formatPrice(singersTotal)}</span>
+                                </div>
+                                <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                  <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${totalPrice > 0 ? (singersTotal / totalPrice) * 100 : 0}%` }}
+                                    transition={{ duration: 0.5, ease: 'easeOut', delay: 0.1 }}
+                                    className="h-full bg-gradient-to-r from-pink-400 to-pink-500 rounded-full"
+                                  />
+                                </div>
+                              </div>
+                            )}
+                            {carsTotal > 0 && (
+                              <div>
+                                <div className="flex justify-between text-sm mb-1">
+                                  <span className="text-muted-foreground">Cars</span>
+                                  <span className="font-medium dark:text-foreground">{formatPrice(carsTotal)}</span>
+                                </div>
+                                <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                  <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${totalPrice > 0 ? (carsTotal / totalPrice) * 100 : 0}%` }}
+                                    transition={{ duration: 0.5, ease: 'easeOut', delay: 0.2 }}
+                                    className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full"
+                                  />
+                                </div>
+                              </div>
+                            )}
+                            {karnaySurnayTotal > 0 && (
+                              <div>
+                                <div className="flex justify-between text-sm mb-1">
+                                  <span className="text-muted-foreground">Karnay-Surnay</span>
+                                  <span className="font-medium dark:text-foreground">{formatPrice(karnaySurnayTotal)}</span>
+                                </div>
+                                <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                  <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${totalPrice > 0 ? (karnaySurnayTotal / totalPrice) * 100 : 0}%` }}
+                                    transition={{ duration: 0.5, ease: 'easeOut', delay: 0.3 }}
+                                    className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full"
+                                  />
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
 
                         {/* Services Summary */}
                         {(selectedSingers.length > 0 || selectedMenus.length > 0 || selectedCars.length > 0 || includeKarnaySurnay) && (
-                          <div className="p-3 rounded-xl bg-amber-50/50 border border-amber-100">
+                          <div className="p-3 rounded-xl bg-amber-50/50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-800/30">
                             <p className="text-xs text-muted-foreground mb-2">Selected Services</p>
                             <div className="flex flex-wrap gap-1.5">
                               {includeKarnaySurnay && (
-                                <Badge className="bg-amber-100 text-amber-800 border-amber-200">
+                                <Badge className="bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800">
                                   <Music className="w-3 h-3 mr-1" />
                                   Karnay-Surnay — {formatPrice(karnaySurnayTotal)}
                                 </Badge>
@@ -1041,7 +1121,7 @@ export default function BookingPage() {
                               {selectedSingers.map((id) => {
                                 const singer = hall.singers.find((s) => s.singerId === id)
                                 return singer ? (
-                                  <Badge key={id} className="bg-rose-100 text-rose-800 border-rose-200">
+                                  <Badge key={id} className="bg-rose-100 dark:bg-rose-900/30 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-800">
                                     <Music className="w-3 h-3 mr-1" />
                                     {singer.singerName} — {formatPrice(singer.price)}
                                   </Badge>
@@ -1050,7 +1130,7 @@ export default function BookingPage() {
                               {selectedMenus.map((id) => {
                                 const menu = hall.menus.find((m) => m.menuId === id)
                                 return menu ? (
-                                  <Badge key={id} className="bg-amber-100 text-amber-800 border-amber-200">
+                                  <Badge key={id} className="bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800">
                                     <Utensils className="w-3 h-3 mr-1" />
                                     {menu.menuName}
                                   </Badge>
@@ -1059,7 +1139,7 @@ export default function BookingPage() {
                               {selectedCars.map((id) => {
                                 const car = hall.cars.find((c) => c.carId === id)
                                 return car ? (
-                                  <Badge key={id} className="bg-rose-100 text-rose-800 border-rose-200">
+                                  <Badge key={id} className="bg-rose-100 dark:bg-rose-900/30 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-800">
                                     <Car className="w-3 h-3 mr-1" />
                                     {car.brand} — {formatPrice(car.price)}
                                   </Badge>
@@ -1119,9 +1199,9 @@ export default function BookingPage() {
           {/* Sticky Price Summary Sidebar */}
           <div className="hidden lg:block w-72 shrink-0">
             <div className="sticky top-4">
-              <Card className="border-rose-100 bg-gradient-to-b from-white to-rose-50/30 shadow-sm">
+              <Card className="border-rose-100 dark:border-rose-900/30 bg-gradient-to-b from-white to-rose-50/30 dark:from-card dark:to-rose-950/10 shadow-sm">
                 <CardContent className="p-5">
-                  <h4 className="font-bold mb-4 flex items-center gap-2">
+                  <h4 className="font-bold mb-4 flex items-center gap-2 dark:text-foreground">
                     <Star className="w-4 h-4 text-amber-500" />
                     Price Summary
                   </h4>
@@ -1129,7 +1209,7 @@ export default function BookingPage() {
                     {bookingDate && (
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Date</span>
-                        <span className="font-medium text-xs">
+                        <span className="font-medium text-xs dark:text-foreground">
                           {new Date(bookingDate + 'T00:00:00').toLocaleDateString('en-US', {
                             month: 'short', day: 'numeric'
                           })}
@@ -1138,41 +1218,68 @@ export default function BookingPage() {
                     )}
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Guests</span>
-                      <span className="font-medium">{guestNum || '—'}</span>
+                      <span className="font-medium dark:text-foreground">{guestNum || '—'}</span>
                     </div>
-                    <Separator className="bg-rose-100" />
+                    <Separator className="bg-rose-100 dark:bg-rose-800/50" />
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Base Price</span>
-                      <span>{guestNum > 0 ? formatPrice(basePrice) : '—'}</span>
+                      <span className="dark:text-foreground">{guestNum > 0 ? formatPrice(basePrice) : '—'}</span>
                     </div>
                     {singersTotal > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Singers</span>
-                        <span>{formatPrice(singersTotal)}</span>
+                      <div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Singers</span>
+                          <span className="dark:text-foreground">{formatPrice(singersTotal)}</span>
+                        </div>
+                        <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden mt-1">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${totalPrice > 0 ? (singersTotal / totalPrice) * 100 : 0}%` }}
+                            className="h-full bg-gradient-to-r from-pink-400 to-pink-500 rounded-full"
+                          />
+                        </div>
                       </div>
                     )}
                     {carsTotal > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Cars</span>
-                        <span>{formatPrice(carsTotal)}</span>
+                      <div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Cars</span>
+                          <span className="dark:text-foreground">{formatPrice(carsTotal)}</span>
+                        </div>
+                        <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden mt-1">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${totalPrice > 0 ? (carsTotal / totalPrice) * 100 : 0}%` }}
+                            className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full"
+                          />
+                        </div>
                       </div>
                     )}
                     {karnaySurnayTotal > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Karnay-Surnay</span>
-                        <span>{formatPrice(karnaySurnayTotal)}</span>
+                      <div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Karnay-Surnay</span>
+                          <span className="dark:text-foreground">{formatPrice(karnaySurnayTotal)}</span>
+                        </div>
+                        <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden mt-1">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${totalPrice > 0 ? (karnaySurnayTotal / totalPrice) * 100 : 0}%` }}
+                            className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full"
+                          />
+                        </div>
                       </div>
                     )}
-                    <Separator className="bg-rose-200" />
+                    <Separator className="bg-rose-200 dark:bg-rose-800/50" />
                     <div className="flex justify-between font-bold">
-                      <span>Total</span>
-                      <span className="text-rose-600">{totalPrice > 0 ? formatPrice(totalPrice) : '—'}</span>
+                      <span className="dark:text-foreground">Total</span>
+                      <span className="text-rose-600 dark:text-rose-400">{totalPrice > 0 ? formatPrice(totalPrice) : '—'}</span>
                     </div>
                     {totalPrice > 0 && (
-                      <div className="p-3 bg-gradient-to-r from-amber-50 to-rose-50 rounded-xl border border-amber-100">
+                      <div className="p-3 bg-gradient-to-r from-amber-50 to-rose-50 dark:from-amber-900/20 dark:to-rose-900/20 rounded-xl border border-amber-100 dark:border-amber-800/30">
                         <div className="flex justify-between text-sm">
                           <span className="text-muted-foreground">Advance (20%)</span>
-                          <span className="font-bold text-amber-600">{formatPrice(advancePayment)}</span>
+                          <span className="font-bold text-amber-600 dark:text-amber-400">{formatPrice(advancePayment)}</span>
                         </div>
                         <p className="text-xs text-muted-foreground mt-1">Due now to confirm booking</p>
                       </div>
@@ -1180,7 +1287,7 @@ export default function BookingPage() {
                   </div>
 
                   {/* Progress dots */}
-                  <div className="mt-5 pt-4 border-t border-rose-100">
+                  <div className="mt-5 pt-4 border-t border-rose-100 dark:border-rose-800/30">
                     <p className="text-xs text-muted-foreground mb-2">Booking Progress</p>
                     <div className="flex items-center gap-1.5">
                       {STEPS.map((_, index) => (
@@ -1189,7 +1296,7 @@ export default function BookingPage() {
                           className={`h-1.5 flex-1 rounded-full transition-all ${
                             index < currentStep
                               ? 'bg-gradient-to-r from-rose-500 to-pink-500'
-                              : 'bg-gray-200'
+                              : 'bg-gray-200 dark:bg-gray-700'
                           }`}
                         />
                       ))}

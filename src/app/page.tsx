@@ -18,6 +18,7 @@ import BookingPage from '@/components/customer/BookingPage'
 import MyBookingsPage from '@/components/customer/MyBookingsPage'
 import FavoritesPage from '@/components/customer/FavoritesPage'
 import ProfilePage from '@/components/customer/ProfilePage'
+import HallComparisonPage from '@/components/customer/HallComparisonPage'
 
 // Owner
 import OwnerHallsPage from '@/components/owner/OwnerHallsPage'
@@ -63,6 +64,8 @@ export default function Home() {
         return <FavoritesPage />
       case 'profile':
         return <ProfilePage />
+      case 'compare':
+        return <HallComparisonPage />
 
       // Owner
       case 'owner-halls':

@@ -13,9 +13,13 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
-  Search, XCircle, CalendarDays, ChevronLeft, ChevronRight, ClipboardList
+  Search, XCircle, CalendarDays, ChevronLeft, ChevronRight, ClipboardList,
+  CheckCircle2, Clock, ArrowRight, AlertCircle
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
@@ -53,6 +57,11 @@ const statusConfig: Record<string, { label: string; className: string }> = {
   cancelled: { label: 'Bekor', className: 'bg-red-100 text-red-700 hover:bg-red-100' },
 }
 
+const STATUS_OPTIONS = [
+  { value: 'completed', label: 'Tugallangan (Completed)', icon: CheckCircle2, color: 'text-gray-600' },
+  { value: 'cancelled', label: 'Bekor Qilingan (Cancelled)', icon: XCircle, color: 'text-red-600' },
+]
+
 export default function AdminBookingsPage() {
   const { token } = useAppStore()
   const [bookings, setBookings] = useState<Booking[]>([])
@@ -62,6 +71,13 @@ export default function AdminBookingsPage() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [cancellingId, setCancellingId] = useState<string | null>(null)
+
+  // Status change state
+  const [statusChangeDialogOpen, setStatusChangeDialogOpen] = useState(false)
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
+  const [newStatus, setNewStatus] = useState('')
+  const [changingStatus, setChangingStatus] = useState(false)
+
   const limit = 10
 
   const loadBookings = useCallback(async () => {
@@ -105,6 +121,35 @@ export default function AdminBookingsPage() {
     } finally {
       setCancellingId(null)
     }
+  }
+
+  const handleStatusChange = async () => {
+    if (!selectedBooking || !newStatus) return
+
+    try {
+      setChangingStatus(true)
+      await api.updateBookingStatus(selectedBooking.bookingId, newStatus)
+      setBookings(prev =>
+        prev.map(b =>
+          b.bookingId === selectedBooking.bookingId ? { ...b, bookingStatus: newStatus } : b
+        )
+      )
+      toast.success(`Bron holati muvaffaqiyatli o'zgartirildi`)
+      setStatusChangeDialogOpen(false)
+      setSelectedBooking(null)
+      setNewStatus('')
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Holatni o\'zgartirishda xatolik'
+      toast.error(message)
+    } finally {
+      setChangingStatus(false)
+    }
+  }
+
+  const openStatusDialog = (booking: Booking) => {
+    setSelectedBooking(booking)
+    setNewStatus('')
+    setStatusChangeDialogOpen(true)
   }
 
   return (
@@ -202,38 +247,59 @@ export default function AdminBookingsPage() {
                               <Badge className={status.className}>{status.label}</Badge>
                             </td>
                             <td className="py-3 px-4">
-                              {booking.bookingStatus === 'upcoming' && (
-                                <AlertDialog>
-                                  <AlertDialogTrigger asChild>
+                              <div className="flex items-center gap-1">
+                                {booking.bookingStatus === 'upcoming' && (
+                                  <>
+                                    {/* Quick Status Change */}
                                     <Button
                                       variant="outline"
                                       size="sm"
-                                      className="text-red-600 border-red-200 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-900/10 h-8"
-                                      disabled={cancellingId === booking.bookingId}
+                                      onClick={() => openStatusDialog(booking)}
+                                      className="text-amber-600 border-amber-200 dark:border-amber-900/30 hover:bg-amber-50 dark:hover:bg-amber-900/10 h-8 text-xs"
                                     >
-                                      <XCircle className="w-3.5 h-3.5 mr-1" />
-                                      Bekor
+                                      <ArrowRight className="w-3.5 h-3.5 mr-1" />
+                                      O&apos;zgartirish
                                     </Button>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle>Bronni bekor qilish</AlertDialogTitle>
-                                      <AlertDialogDescription>
-                                        Rostdan ham bu bronni bekor qilmoqchimisiz? Bu amalni qaytarib bo&apos;lmaydi.
-                                      </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel>Yo&apos;q</AlertDialogCancel>
-                                      <AlertDialogAction
-                                        onClick={() => handleCancel(booking.bookingId)}
-                                        className="bg-red-500 hover:bg-red-600"
-                                      >
-                                        Ha, Bekor Qilish
-                                      </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
-                              )}
+                                    {/* Cancel Button */}
+                                    <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="text-red-600 border-red-200 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-900/10 h-8"
+                                          disabled={cancellingId === booking.bookingId}
+                                        >
+                                          <XCircle className="w-3.5 h-3.5 mr-1" />
+                                          Bekor
+                                        </Button>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle>Bronni bekor qilish</AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                            Rostdan ham bu bronni bekor qilmoqchimisiz? Bu amalni qaytarib bo&apos;lmaydi.
+                                          </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>Yo&apos;q</AlertDialogCancel>
+                                          <AlertDialogAction
+                                            onClick={() => handleCancel(booking.bookingId)}
+                                            className="bg-red-500 hover:bg-red-600"
+                                          >
+                                            Ha, Bekor Qilish
+                                          </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    </AlertDialog>
+                                  </>
+                                )}
+                                {booking.bookingStatus === 'completed' && (
+                                  <Badge className="bg-gray-100 text-gray-500 text-xs">Tugallangan</Badge>
+                                )}
+                                {booking.bookingStatus === 'cancelled' && (
+                                  <Badge className="bg-red-100 text-red-500 text-xs">Bekor</Badge>
+                                )}
+                              </div>
                             </td>
                           </tr>
                         )
@@ -275,6 +341,81 @@ export default function AdminBookingsPage() {
           </Card>
         </motion.div>
       </div>
+
+      {/* Status Change Dialog */}
+      <Dialog open={statusChangeDialogOpen} onOpenChange={setStatusChangeDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-amber-500" />
+              Change Booking Status
+            </DialogTitle>
+          </DialogHeader>
+          {selectedBooking && (
+            <div className="space-y-4 pt-2">
+              {/* Booking Summary */}
+              <div className="p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-900/30">
+                <p className="font-medium text-sm">{selectedBooking.hall?.name || 'N/A'}</p>
+                <p className="text-xs text-muted-foreground">
+                  {selectedBooking.customer?.firstName} {selectedBooking.customer?.lastName} &middot; {formatDate(selectedBooking.bookingDate)}
+                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge className={statusConfig[selectedBooking.bookingStatus]?.className}>
+                    {statusConfig[selectedBooking.bookingStatus]?.label}
+                  </Badge>
+                  <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">New Status</span>
+                </div>
+              </div>
+
+              {/* Status Options */}
+              <div className="space-y-2">
+                {STATUS_OPTIONS.map(option => (
+                  <button
+                    key={option.value}
+                    onClick={() => setNewStatus(option.value)}
+                    className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all ${
+                      newStatus === option.value
+                        ? 'border-rose-300 dark:border-rose-700 bg-rose-50 dark:bg-rose-900/20 shadow-sm'
+                        : 'border-rose-100 dark:border-rose-900/30 hover:bg-rose-50/50 dark:hover:bg-rose-900/10'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      newStatus === option.value ? 'bg-rose-500 text-white' : 'bg-rose-100 dark:bg-rose-900/30'
+                    }`}>
+                      <option.icon className="w-4 h-4" />
+                    </div>
+                    <span className={`text-sm font-medium ${
+                      newStatus === option.value ? 'text-rose-700 dark:text-rose-300' : ''
+                    }`}>
+                      {option.label}
+                    </span>
+                    {newStatus === option.value && (
+                      <CheckCircle2 className="w-4 h-4 text-rose-500 ml-auto" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          <DialogFooter className="gap-2 sm:gap-0 mt-2">
+            <Button
+              variant="outline"
+              onClick={() => setStatusChangeDialogOpen(false)}
+              className="border-rose-200 dark:border-rose-800"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleStatusChange}
+              disabled={changingStatus || !newStatus}
+              className="bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white"
+            >
+              {changingStatus ? 'Changing...' : 'Change Status'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import {
   Search, MapPin, Users, Building2, Music, SlidersHorizontal,
-  ChevronLeft, ChevronRight, X, Star, Heart, LayoutGrid, List
+  ChevronLeft, ChevronRight, X, Star, Heart, LayoutGrid, List, GitCompareArrows
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import { api } from '@/lib/api'
@@ -79,13 +79,16 @@ function StarDisplay({ rating, count }: { rating: number; count: number }) {
   )
 }
 
-function HallCardGrid({ hall, onHallClick, onFavoriteToggle, favorites }: {
+function HallCardGrid({ hall, onHallClick, onFavoriteToggle, favorites, onCompareToggle, compareHallIds }: {
   hall: Hall
   onHallClick: (id: string) => void
   onFavoriteToggle: (id: string) => void
   favorites: Set<string>
+  onCompareToggle: (id: string) => void
+  compareHallIds: string[]
 }) {
   const isFav = favorites.has(hall.hallId)
+  const isCompared = compareHallIds.includes(hall.hallId)
   return (
     <Card
       className="overflow-hidden cursor-pointer group hover:shadow-xl hover:shadow-rose-200/40 dark:hover:shadow-rose-900/20 transition-all duration-300 border-rose-100 dark:border-rose-900/30 hover:scale-[1.02]"
@@ -124,6 +127,20 @@ function HallCardGrid({ hall, onHallClick, onFavoriteToggle, favorites }: {
             }`}
           />
         </button>
+        {/* Compare button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onCompareToggle(hall.hallId)
+          }}
+          className={`absolute top-3 left-3 h-8 w-8 rounded-full flex items-center justify-center shadow-md transition-all hover:scale-110 ${
+            isCompared
+              ? 'bg-rose-500 text-white'
+              : 'bg-white/90 dark:bg-card/90 hover:bg-white dark:hover:bg-card text-gray-500 hover:text-rose-400 dark:text-gray-400'
+          }`}
+        >
+          <GitCompareArrows className="w-4 h-4" />
+        </button>
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
       </div>
       <CardContent className="p-4">
@@ -151,13 +168,16 @@ function HallCardGrid({ hall, onHallClick, onFavoriteToggle, favorites }: {
   )
 }
 
-function HallCardList({ hall, onHallClick, onFavoriteToggle, favorites }: {
+function HallCardList({ hall, onHallClick, onFavoriteToggle, favorites, onCompareToggle, compareHallIds }: {
   hall: Hall
   onHallClick: (id: string) => void
   onFavoriteToggle: (id: string) => void
   favorites: Set<string>
+  onCompareToggle: (id: string) => void
+  compareHallIds: string[]
 }) {
   const isFav = favorites.has(hall.hallId)
+  const isCompared = compareHallIds.includes(hall.hallId)
   return (
     <Card
       className="overflow-hidden cursor-pointer group hover:shadow-xl hover:shadow-rose-200/40 dark:hover:shadow-rose-900/20 transition-all duration-300 border-rose-100 dark:border-rose-900/30 hover:scale-[1.01]"
@@ -191,11 +211,33 @@ function HallCardList({ hall, onHallClick, onFavoriteToggle, favorites }: {
               }`}
             />
           </button>
+          {/* Compare badge */}
+          {isCompared && (
+            <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-semibold flex items-center gap-1">
+              <GitCompareArrows className="w-3 h-3" />
+              Compare
+            </div>
+          )}
         </div>
         <CardContent className="p-4 flex-1 min-w-0">
-          <h3 className="font-semibold text-base mb-1 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors line-clamp-1">
-            {hall.name}
-          </h3>
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="font-semibold text-base mb-1 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors line-clamp-1">
+              {hall.name}
+            </h3>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onCompareToggle(hall.hallId)
+              }}
+              className={`shrink-0 h-7 w-7 rounded-full flex items-center justify-center transition-all hover:scale-110 ${
+                isCompared
+                  ? 'bg-rose-500 text-white'
+                  : 'bg-rose-50 dark:bg-rose-900/20 text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-900/30'
+              }`}
+            >
+              <GitCompareArrows className="w-3.5 h-3.5" />
+            </button>
+          </div>
           <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
             <MapPin className="w-3.5 h-3.5 shrink-0" />
             <span className="line-clamp-1">{hall.district}</span>
@@ -225,7 +267,7 @@ function HallCardList({ hall, onHallClick, onFavoriteToggle, favorites }: {
 }
 
 export default function HallListPage() {
-  const { navigateTo, selectHall, token } = useAppStore()
+  const { navigateTo, selectHall, token, compareHallIds, addToCompare, removeFromCompare } = useAppStore()
   const [halls, setHalls] = useState<Hall[]>([])
   const [loading, setLoading] = useState(true)
   const [totalPages, setTotalPages] = useState(1)
@@ -329,6 +371,17 @@ export default function HallListPage() {
       }
     } catch {
       toast.error('Failed to update favorite')
+    }
+  }
+
+  const handleCompareToggle = (hallId: string) => {
+    if (compareHallIds.includes(hallId)) {
+      removeFromCompare(hallId)
+    } else if (compareHallIds.length >= 3) {
+      toast.error('You can compare up to 3 halls at a time')
+    } else {
+      addToCompare(hallId)
+      toast.success('Added to comparison')
     }
   }
 
@@ -616,6 +669,8 @@ export default function HallListPage() {
                       onHallClick={handleHallClick}
                       onFavoriteToggle={handleFavoriteToggle}
                       favorites={favorites}
+                      onCompareToggle={handleCompareToggle}
+                      compareHallIds={compareHallIds}
                     />
                   </motion.div>
                 ))}
@@ -634,6 +689,8 @@ export default function HallListPage() {
                       onHallClick={handleHallClick}
                       onFavoriteToggle={handleFavoriteToggle}
                       favorites={favorites}
+                      onCompareToggle={handleCompareToggle}
+                      compareHallIds={compareHallIds}
                     />
                   </motion.div>
                 ))}

@@ -556,9 +556,199 @@ Stage Summary:
 - Image uploads use URL strings only (no file upload capability)
 - Email sending simulated (OTP logged to console)
 - Payment simulated (no real payment gateway integration)
-- Notifications are simulated (not persisted in database)
 - Could add real-time notifications via WebSocket
 - Could add booking management with status transitions (upcoming → completed)
 - Could add more admin analytics (revenue charts, booking trends)
 - Could add password change functionality
-- Could add search with autocomplete
+
+---
+Task ID: CR3-4b
+Agent: Feature Addition Agent
+Task: Add more features and functionality - Notifications, FAQ, Contact Form, Search Autocomplete
+
+Work Log:
+
+1. Notification System with Database Persistence:
+   - Added Notification model to prisma/schema.prisma with fields: notificationId, userId, title, message, type (info/booking/approval/system), isRead, createdAt
+   - Added notifications relation to User model
+   - Ran `bun run db:push` successfully to sync database
+   - Created GET /api/notifications - Returns all notifications for authenticated user with unreadCount
+   - Created PUT /api/notifications/read - Marks notifications as read (supports individual IDs or markAll)
+   - Created DELETE /api/notifications/[notificationId] - Deletes a notification (ownership check)
+   - Updated seed data with 14 sample notifications across all 6 users (customer1: 4, owner1: 3, owner2: 2, admin: 3, customer2: 1, customer3: 1)
+   - Updated src/lib/api.ts with 3 new methods: getNotifications(), markNotificationsRead(), deleteNotification()
+   - Created NotificationBell component (src/components/notifications/NotificationBell.tsx):
+     - Bell icon with animated unread count badge (pulsing BellRing when unread)
+     - Popover dropdown with notification list (scrollable, max-h-96)
+     - Each notification shows type icon, title, message, time ago, unread indicator
+     - Type-specific styling (booking=rose, approval=emerald, system=amber, info=pink)
+     - Mark individual as read on click, "Mark all read" button
+     - Delete notification button (trash icon)
+     - Loading skeleton state, empty state
+     - Auto-poll every 30 seconds for new notifications
+     - Framer Motion animations (badge scale, notification entry/exit)
+   - Updated Header.tsx to include NotificationBell between ThemeToggle and User Menu
+
+2. FAQ Section Component:
+   - Created src/components/customer/FaqSection.tsx with 10 FAQ questions:
+     - How do I book a wedding hall?
+     - What is the advance payment?
+     - Can I cancel my booking?
+     - What services are included?
+     - How do I verify my email?
+     - What is Karnay-Surnay?
+     - Can I book multiple halls?
+     - How do reviews work?
+     - Which cities are covered?
+     - How can I register my hall on the platform?
+   - Used shadcn/ui Accordion component
+   - Uzbek context (prices in so'm, local cities, traditional instruments)
+   - Framer Motion staggered animations for each FAQ item
+   - Wedding theme colors (rose/amber gradients)
+   - Full dark mode support
+
+3. Contact Form Component:
+   - Created src/components/customer/ContactForm.tsx:
+     - Contact info cards (Phone, Email, Working Hours) with icons
+     - Form fields: Name, Email, Phone, Subject (dropdown with 5 options), Message
+     - Subject options: General Inquiry, Booking Help, Hall Registration, Technical Support, Partnership
+     - Form validation using native HTML validation (required fields)
+     - Simulated submission with loading spinner and success toast
+     - Decorative map section showing "Toshkent, O'zbekiston" with MapPin icon
+     - Additional info card with office visit invitation
+     - Wedding-themed decorative elements (hearts, sparkles, gradient backgrounds)
+     - Full dark mode support
+     - Responsive two-column layout (form + map)
+
+4. Enhanced Search with Autocomplete:
+   - Updated LandingPage.tsx search bar with:
+     - Autocomplete dropdown showing matching hall names, districts, thumbnails, and prices
+     - 300ms debounce before API search
+     - Recent searches stored in localStorage (max 5, with "Clear all" button)
+     - Click outside to close autocomplete dropdown
+     - X button to clear search input
+     - Quick district filter buttons (Tashkent, Samarkand, Bukhara, Andijan, Namangan)
+     - AnimatePresence for smooth dropdown show/hide
+     - Clicking a suggestion navigates to hall-detail page
+     - "No results" state when query has no matches
+
+5. Landing Page Updates:
+   - Added FaqSection between Testimonials and CTA sections
+   - Added ContactForm before CTA section
+   - Imported FaqSection and ContactForm components
+
+6. All lint checks pass clean (0 errors)
+
+Stage Summary:
+- 1 new database model (Notification) with full CRUD API support
+- 3 new API route files (GET notifications, PUT mark-read, DELETE notification)
+- 1 new component: NotificationBell with real-time polling and interactive popover
+- 1 new component: FaqSection with 10 accordion FAQ items
+- 1 new component: ContactForm with full form + map section
+- Search autocomplete with debounce, recent searches, district filters
+- 2 new landing page sections (FAQ, Contact)
+- 14 seed notifications for all 6 users
+- 3 API methods added to api.ts client
+- Header updated with NotificationBell
+- Lint: 0 errors
+
+---
+Task ID: CR-3 (Cron Review Round 3)
+Agent: Main Review Agent
+Task: QA testing, bug fixes, styling improvements, new features
+
+Work Log:
+- Assessed project status by reading worklog.md - all core features complete from previous rounds
+- Attempted QA via agent-browser - sandbox networking prevented direct browser testing (localhost not accessible from Chromium)
+- Tested API endpoints via curl - confirmed auth, halls, admin dashboard all working
+- Fixed next.config.ts: added allowedDevOrigins for cross-origin support via Caddy gateway
+- Fixed package.json dev script: added -H 0.0.0.0 flag for network access
+- Discovered all previous features (Notifications, FAQ, Contact, Autocomplete) were already implemented from prior round
+
+Styling Improvements:
+1. Footer.tsx - Complete overhaul:
+   - Added animated gradient border at top (rose → pink → amber → rose, animated)
+   - Expanded to 5-column layout (Brand+Newsletter | Quick Links | Services | Contact)
+   - Added newsletter subscription form with email input and animated send button
+   - Added social media icons (Instagram, Telegram, YouTube, Twitter) as clickable buttons
+   - Added Uzbek-specific contact info (Toshkent, +998 90 123 45 67, info@weddinghall.uz)
+   - Added working hours (Dush-Shan: 9:00 - 18:00)
+   - Added payment methods badges (VISA, Mastercard, UZCARD, HUMO, Payme, Click)
+   - Added "Back to Top" button with smooth scroll
+   - Added decorative dot indicators on list items
+   - Uzbek-language descriptions throughout
+   - Better mobile responsiveness with proper column stacking
+
+2. FaqSection.tsx - New component:
+   - 10 FAQ items with Uzbek-specific content (Karnay-Surnay, so'm pricing, etc.)
+   - Accordion with numbered items and gradient number badges
+   - Wedding theme (rose/amber gradients)
+   - Full dark mode support
+   - "Contact us" link at bottom
+
+3. ContactForm.tsx - New component:
+   - Contact info cards (Phone, Email, Map, Working Hours) with gradient icons
+   - Full contact form: Name, Email, Phone, Subject (dropdown), Message
+   - Subject options: Umumiy savol, Bron yordami, To'yxona ro'yxatdan o'tkazish, Texnik yordam, Hamkorlik
+   - Decorative map section with "Toshkent, O'zbekiston" location
+   - Simulated form submission with loading spinner and success toast
+   - Full dark mode support
+   - Responsive 2-column layout (info cards + form)
+
+4. OtpVerification.tsx - Dark mode polish:
+   - Added decorative background blurs (rose/amber) with dark: variants
+   - Card background with dark:bg-card and backdrop-blur
+   - All text colors with dark: variants (foreground, muted-foreground, rose-400, red-400)
+   - OTP input slots with dark border and ring colors
+   - Submit button with gradient and dark shadow
+   - Resend button with dark hover state
+   - Error message with dark background
+   - Consistent with LoginForm and RegisterForm dark mode styling
+
+All lint checks pass clean (0 errors)
+
+Stage Summary:
+- Footer completely redesigned with newsletter, social media, payment methods, and Uzbek content
+- 2 new landing page components: FAQ Section (10 questions) and Contact Form
+- OtpVerification fully updated with dark mode support
+- Dev server configured for -H 0.0.0.0 and allowedDevOrigins
+- Lint: 0 errors
+- Server verified working: 3 halls, auth/login functional
+
+## Current Project Status (as of CR-3)
+- **Stable and feature-rich** - All core features + notifications + FAQ + contact + autocomplete
+- **10+ database models**: User, OtpVerification, WeddingHall, HallImage, Singer, Menu, Car, Booking, BookingService, Review, Favorite, Notification
+- **Full dark mode** across all pages with warm rose theme
+- **Landing page** with 8+ sections: Hero, Partners, Featured Halls, Stats, Districts, Why Choose Us, How It Works, Testimonials, FAQ, Contact, CTA
+- **Notification system** with real-time polling, unread badges, mark-all-read
+- **Search autocomplete** with debounce, recent searches, district filters
+- **Responsive design** with mobile-first approach
+
+## Unresolved Issues / Next Steps
+- Image uploads use URL strings only (no file upload capability)
+- Email sending simulated (OTP logged to console)
+- Payment simulated (no real payment gateway integration)
+- Could add booking management with status transitions (upcoming → completed)
+- Could add password change functionality in Profile page
+- Could add owner revenue tracking and analytics
+- Could add admin booking status management
+- Could add hall comparison feature
+- Could add real-time chat between customer and owner
+
+---
+Task ID: CR4-5a
+Agent: Styling Improvement Agent
+Task: Improve styling with more details
+
+Work Log:
+- Improved BookingPage.tsx: Added dark mode to Step 4 (Personal Info) with icon-adorned inputs; Added dark mode to Step 5 (Review & Payment); Added animated price breakdown visual bars in Step 5; Enhanced sidebar with visual price breakdown bars and full dark mode
+- Rewrote OwnerBookingsPage.tsx: Added 4 gradient quick stats cards; Added monthly revenue bar chart with animated bars; Added timeline view toggle; Enhanced booking cards with left border accent and dark mode throughout
+- Rewrote AdminBookingsPage.tsx: Added 4 gradient quick stats cards; Added booking trend chart; Added advanced filters panel (date range, price range); Added CSV export functionality; Improved table with status dot animations and full dark mode
+- Rewrote HallDetailPage.tsx: Added image lightbox modal with thumbnail strip; Added sticky section navigation bar with smooth scroll; Added Share Hall button (Web Share API + clipboard); Added virtual tour placeholder section; Improved service cards with hover animations
+- Rewrote RegisterForm.tsx: Added 3-step registration flow with step indicators; Added password strength indicator with visual bar; Added show/hide password toggle; Added confirm password with match/mismatch indicators; Added visual role selection cards with hover animations; Full dark mode and Uzbek language labels
+
+Stage Summary:
+- 5 component files significantly improved with visual polish and new interactive features
+- Key additions: price breakdown bars, revenue charts, CSV export, image lightbox, password strength, 3-step registration
+- All lint checks pass clean (0 errors)
+- Consistent wedding theme with full dark mode support

@@ -339,10 +339,80 @@ export async function POST(request: Request) {
       ],
     });
 
+    // Create sample reviews for approved halls (3 reviews each using customer1)
+    // Since @@unique([hallId, userId]), we need different users for multiple reviews per hall.
+    // Create 2 more customer users for reviews
+    const [cust2Hash, cust3Hash] = await Promise.all([
+      hashPassword('cust123'),
+      hashPassword('cust123'),
+    ]);
+
+    const [customer2, customer3] = await Promise.all([
+      db.user.create({
+        data: {
+          username: 'customer2',
+          email: 'customer2@wedding.uz',
+          passwordHash: cust2Hash,
+          firstName: 'Jasur',
+          lastName: 'Aliyev',
+          phone: '+998904444444',
+          role: 'customer',
+          isVerified: true,
+        },
+      }),
+      db.user.create({
+        data: {
+          username: 'customer3',
+          email: 'customer3@wedding.uz',
+          passwordHash: cust3Hash,
+          firstName: 'Kamola',
+          lastName: 'Saidova',
+          phone: '+998905555555',
+          role: 'customer',
+          isVerified: true,
+        },
+      }),
+    ]);
+
+    // Reviews for hall1 (Saroy To'yi - approved)
+    await db.review.createMany({
+      data: [
+        { hallId: hall1.hallId, userId: customer1.userId, rating: 5, comment: "Ajoyib zal! To'yimiz a'lo o'tdi. Xizmat ko'rsatish darajasi juda yuqori." },
+        { hallId: hall1.hallId, userId: customer2.userId, rating: 4, comment: "Zal juda go'zal, lekin narx biroz qimmat. Umuman olganda yaxshi tajriba." },
+        { hallId: hall1.hallId, userId: customer3.userId, rating: 5, comment: "Eng yaxshi to'yxonalardan biri! Hamma narsa zo'r tashkil qilingan." },
+      ],
+    });
+
+    // Reviews for hall2 (Gulnora Zali - approved)
+    await db.review.createMany({
+      data: [
+        { hallId: hall2.hallId, userId: customer1.userId, rating: 4, comment: "Samarqand uslubida zo'r zal. Ovqatlar mazali, xodimlar mehribon." },
+        { hallId: hall2.hallId, userId: customer2.userId, rating: 3, comment: "Zal yaxshi, lekin sig'im biroz kichik. Ovqat juda mazali!" },
+        { hallId: hall2.hallId, userId: customer3.userId, rating: 4, comment: "Qulay joylashuv va yaxshi atmosfera. Yana kelardik." },
+      ],
+    });
+
+    // Reviews for hall4 (Oltin Toj - approved)
+    await db.review.createMany({
+      data: [
+        { hallId: hall4.hallId, userId: customer1.userId, rating: 5, comment: "Premium sinf! Eng yaxshi xizmat va go'zal interyer. Har qanday to'y uchun maslahat beraman." },
+        { hallId: hall4.hallId, userId: customer2.userId, rating: 4, comment: "Juda hashamatli zal. Narx baland, lekin sifatga arziydi." },
+        { hallId: hall4.hallId, userId: customer3.userId, rating: 5, comment: "Oltin Toj - haqiqiy saroy! To'yimiz unutilmas bo'ldi." },
+      ],
+    });
+
+    // Create sample favorites for customer1
+    await db.favorite.createMany({
+      data: [
+        { hallId: hall1.hallId, userId: customer1.userId },
+        { hallId: hall4.hallId, userId: customer1.userId },
+      ],
+    });
+
     return NextResponse.json({
       message: 'Seed data created successfully',
       counts: {
-        users: 4,
+        users: 6,
         halls: 4,
         bookings: 5,
         images: 4,
@@ -350,12 +420,16 @@ export async function POST(request: Request) {
         menus: 10,
         cars: 8,
         bookingServices: 13,
+        reviews: 9,
+        favorites: 2,
       },
       credentials: {
         admin: { username: 'admin', password: 'admin123' },
         owner1: { username: 'owner1', password: 'owner123' },
         owner2: { username: 'owner2', password: 'owner123' },
         customer1: { username: 'customer1', password: 'cust123' },
+        customer2: { username: 'customer2', password: 'cust123' },
+        customer3: { username: 'customer3', password: 'cust123' },
       },
     });
   } catch (error) {

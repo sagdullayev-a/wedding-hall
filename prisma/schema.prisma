@@ -22,6 +22,8 @@ model User {
   otpVerifications  OtpVerification[]
   ownedHalls        WeddingHall[]
   bookings          Booking[]
+  reviews           Review[]
+  favorites         Favorite[]
 
   @@map("users")
 }
@@ -58,6 +60,8 @@ model WeddingHall {
   menus    Menu[]
   cars     Car[]
   bookings Booking[]
+  reviews  Review[]
+  favorites Favorite[]
 
   @@map("wedding_halls")
 }
@@ -134,4 +138,32 @@ model BookingService {
   booking Booking @relation(fields: [bookingId], references: [bookingId], onDelete: Cascade)
 
   @@map("booking_services")
+}
+
+model Review {
+  reviewId  String   @id @default(cuid()) @map("review_id")
+  hallId    String   @map("hall_id")
+  userId    String   @map("user_id")
+  rating    Int      // 1-5 stars
+  comment   String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  hall WeddingHall @relation(fields: [hallId], references: [hallId], onDelete: Cascade)
+  user User        @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@unique([hallId, userId]) // One review per user per hall
+  @@map("reviews")
+}
+
+model Favorite {
+  favoriteId String @id @default(cuid()) @map("favorite_id")
+  hallId     String @map("hall_id")
+  userId     String @map("user_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  hall WeddingHall @relation(fields: [hallId], references: [hallId], onDelete: Cascade)
+  user User        @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@unique([hallId, userId]) // One favorite per user per hall
+  @@map("favorites")
 }

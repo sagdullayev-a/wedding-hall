@@ -4,10 +4,11 @@ import { useEffect, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import {
   Search, MapPin, Users, Building2, Music, SlidersHorizontal,
-  ChevronLeft, ChevronRight, X
+  ChevronLeft, ChevronRight, X, Star, Heart, LayoutGrid, List
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import { api } from '@/lib/api'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
@@ -43,6 +44,8 @@ interface Hall {
   singers: { singerId: string; singerName: string; price: number }[]
   menus: { menuId: string; menuName: string }[]
   cars: { carId: string; brand: string; price: number }[]
+  averageRating?: number
+  reviewCount?: number
 }
 
 const DISTRICTS = [
@@ -54,13 +57,186 @@ const DISTRICTS = [
 const formatPrice = (price: number) =>
   new Intl.NumberFormat('uz-UZ').format(price) + " so'm"
 
+function StarDisplay({ rating, count }: { rating: number; count: number }) {
+  return (
+    <div className="flex items-center gap-1">
+      <div className="flex items-center gap-0.5">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Star
+            key={i}
+            className={`w-3 h-3 ${
+              i < Math.round(rating)
+                ? 'text-amber-400 fill-amber-400'
+                : 'text-gray-200 fill-gray-200'
+            }`}
+          />
+        ))}
+      </div>
+      {count > 0 && (
+        <span className="text-xs text-muted-foreground">({count})</span>
+      )}
+    </div>
+  )
+}
+
+function HallCardGrid({ hall, onHallClick, onFavoriteToggle, favorites }: {
+  hall: Hall
+  onHallClick: (id: string) => void
+  onFavoriteToggle: (id: string) => void
+  favorites: Set<string>
+}) {
+  const isFav = favorites.has(hall.hallId)
+  return (
+    <Card
+      className="overflow-hidden cursor-pointer group hover:shadow-xl hover:shadow-rose-200/40 transition-all duration-300 border-rose-100 hover:scale-[1.02]"
+      onClick={() => onHallClick(hall.hallId)}
+    >
+      <div className="relative h-48 overflow-hidden">
+        {hall.images?.[0]?.imageUrl ? (
+          <img
+            src={hall.images[0].imageUrl}
+            alt={hall.name}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-rose-100 to-amber-100 flex items-center justify-center">
+            <Building2 className="w-14 h-14 text-rose-300" />
+          </div>
+        )}
+        {hall.hasKarnaySurnay && (
+          <Badge className="absolute top-3 right-14 bg-amber-500 text-white text-xs">
+            <Music className="w-3 h-3 mr-1" />
+            Karnay-Surnay
+          </Badge>
+        )}
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onFavoriteToggle(hall.hallId)
+          }}
+          className="absolute top-3 right-3 h-8 w-8 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-md transition-all hover:scale-110"
+        >
+          <Heart
+            className={`w-4 h-4 transition-colors ${
+              isFav
+                ? 'text-rose-500 fill-rose-500'
+                : 'text-gray-500 hover:text-rose-400'
+            }`}
+          />
+        </button>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+      </div>
+      <CardContent className="p-4">
+        <h3 className="font-semibold text-base mb-1 group-hover:text-rose-600 transition-colors line-clamp-1">
+          {hall.name}
+        </h3>
+        <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
+          <MapPin className="w-3.5 h-3.5 shrink-0" />
+          <span className="line-clamp-1">{hall.district}</span>
+        </div>
+        {(hall.averageRating !== undefined && hall.averageRating > 0) && (
+          <StarDisplay rating={hall.averageRating} count={hall.reviewCount || 0} />
+        )}
+        <div className="flex items-center justify-between mt-3">
+          <Badge variant="secondary" className="bg-rose-50 text-rose-700 border-rose-100">
+            <Users className="w-3 h-3 mr-1" />
+            {hall.capacity}
+          </Badge>
+          <span className="text-sm font-semibold text-rose-600">
+            {formatPrice(hall.seatPrice)}/seat
+          </span>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function HallCardList({ hall, onHallClick, onFavoriteToggle, favorites }: {
+  hall: Hall
+  onHallClick: (id: string) => void
+  onFavoriteToggle: (id: string) => void
+  favorites: Set<string>
+}) {
+  const isFav = favorites.has(hall.hallId)
+  return (
+    <Card
+      className="overflow-hidden cursor-pointer group hover:shadow-xl hover:shadow-rose-200/40 transition-all duration-300 border-rose-100 hover:scale-[1.01]"
+      onClick={() => onHallClick(hall.hallId)}
+    >
+      <div className="flex">
+        <div className="relative w-40 sm:w-48 shrink-0 overflow-hidden">
+          {hall.images?.[0]?.imageUrl ? (
+            <img
+              src={hall.images[0].imageUrl}
+              alt={hall.name}
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+            />
+          ) : (
+            <div className="w-full h-full min-h-[120px] bg-gradient-to-br from-rose-100 to-amber-100 flex items-center justify-center">
+              <Building2 className="w-10 h-10 text-rose-300" />
+            </div>
+          )}
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onFavoriteToggle(hall.hallId)
+            }}
+            className="absolute top-2 right-2 h-7 w-7 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-sm transition-all hover:scale-110"
+          >
+            <Heart
+              className={`w-3.5 h-3.5 transition-colors ${
+                isFav
+                  ? 'text-rose-500 fill-rose-500'
+                  : 'text-gray-500 hover:text-rose-400'
+              }`}
+            />
+          </button>
+        </div>
+        <CardContent className="p-4 flex-1 min-w-0">
+          <h3 className="font-semibold text-base mb-1 group-hover:text-rose-600 transition-colors line-clamp-1">
+            {hall.name}
+          </h3>
+          <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
+            <MapPin className="w-3.5 h-3.5 shrink-0" />
+            <span className="line-clamp-1">{hall.district}</span>
+          </div>
+          {(hall.averageRating !== undefined && hall.averageRating > 0) && (
+            <StarDisplay rating={hall.averageRating} count={hall.reviewCount || 0} />
+          )}
+          <div className="flex items-center gap-3 mt-2">
+            <Badge variant="secondary" className="bg-rose-50 text-rose-700 border-rose-100">
+              <Users className="w-3 h-3 mr-1" />
+              {hall.capacity} guests
+            </Badge>
+            {hall.hasKarnaySurnay && (
+              <Badge className="bg-amber-100 text-amber-800 border-amber-200 text-xs">
+                <Music className="w-3 h-3 mr-1" />
+                Karnay-Surnay
+              </Badge>
+            )}
+          </div>
+          <p className="text-sm font-semibold text-rose-600 mt-2">
+            {formatPrice(hall.seatPrice)}/seat
+          </p>
+        </CardContent>
+      </div>
+    </Card>
+  )
+}
+
 export default function HallListPage() {
-  const { navigateTo, selectHall } = useAppStore()
+  const { navigateTo, selectHall, token } = useAppStore()
   const [halls, setHalls] = useState<Hall[]>([])
   const [loading, setLoading] = useState(true)
   const [totalPages, setTotalPages] = useState(1)
   const [currentPage, setCurrentPage] = useState(1)
   const [total, setTotal] = useState(0)
+
+  // View mode
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+
+  // Favorites
+  const [favorites, setFavorites] = useState<Set<string>>(new Set())
 
   // Filters
   const [search, setSearch] = useState('')
@@ -100,6 +276,23 @@ export default function HallListPage() {
     loadHalls()
   }, [loadHalls])
 
+  // Load favorites
+  useEffect(() => {
+    if (token) {
+      loadFavorites()
+    }
+  }, [token])
+
+  const loadFavorites = async () => {
+    try {
+      const res = await api.getFavorites()
+      const favHalls = res.favorites || []
+      setFavorites(new Set(favHalls.map((f: { hallId: string }) => f.hallId)))
+    } catch {
+      // Silently ignore
+    }
+  }
+
   const handleSearch = () => {
     setCurrentPage(1)
     loadHalls()
@@ -108,6 +301,35 @@ export default function HallListPage() {
   const handleHallClick = (hallId: string) => {
     selectHall(hallId)
     navigateTo('hall-detail')
+  }
+
+  const handleFavoriteToggle = async (hallId: string) => {
+    if (!token) {
+      toast.error('Please login to add favorites')
+      navigateTo('login')
+      return
+    }
+    try {
+      if (favorites.has(hallId)) {
+        await api.removeFavorite(hallId)
+        setFavorites((prev) => {
+          const next = new Set(prev)
+          next.delete(hallId)
+          return next
+        })
+        toast.success('Removed from favorites')
+      } else {
+        await api.addFavorite(hallId)
+        setFavorites((prev) => {
+          const next = new Set(prev)
+          next.add(hallId)
+          return next
+        })
+        toast.success('Added to favorites')
+      }
+    } catch {
+      toast.error('Failed to update favorite')
+    }
   }
 
   const clearFilters = () => {
@@ -123,25 +345,25 @@ export default function HallListPage() {
   const hasActiveFilters = search || district || minCapacity || maxPrice
 
   const FilterContent = () => (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div>
-        <label className="text-sm font-medium mb-1.5 block">Search by Name</label>
+        <label className="text-sm font-medium mb-1.5 block text-rose-900">Search by Name</label>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-rose-400" />
           <Input
             placeholder="Hall name..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setCurrentPage(1) }}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            className="pl-9"
+            className="pl-9 border-rose-200 focus:border-rose-400 focus:ring-rose-200"
           />
         </div>
       </div>
 
       <div>
-        <label className="text-sm font-medium mb-1.5 block">District</label>
+        <label className="text-sm font-medium mb-1.5 block text-rose-900">District</label>
         <Select value={district} onValueChange={(v) => { setDistrict(v === 'all' ? '' : v); setCurrentPage(1) }}>
-          <SelectTrigger>
+          <SelectTrigger className="border-rose-200 focus:border-rose-400">
             <SelectValue placeholder="All districts" />
           </SelectTrigger>
           <SelectContent>
@@ -154,31 +376,33 @@ export default function HallListPage() {
       </div>
 
       <div>
-        <label className="text-sm font-medium mb-1.5 block">Min Capacity</label>
+        <label className="text-sm font-medium mb-1.5 block text-rose-900">Min Capacity</label>
         <Input
           type="number"
           placeholder="Min guests"
           value={minCapacity}
           onChange={(e) => { setMinCapacity(e.target.value); setCurrentPage(1) }}
           min={0}
+          className="border-rose-200 focus:border-rose-400 focus:ring-rose-200"
         />
       </div>
 
       <div>
-        <label className="text-sm font-medium mb-1.5 block">Max Price per Seat</label>
+        <label className="text-sm font-medium mb-1.5 block text-rose-900">Max Price per Seat</label>
         <Input
           type="number"
           placeholder="Max price"
           value={maxPrice}
           onChange={(e) => { setMaxPrice(e.target.value); setCurrentPage(1) }}
           min={0}
+          className="border-rose-200 focus:border-rose-400 focus:ring-rose-200"
         />
       </div>
 
       <div>
-        <label className="text-sm font-medium mb-1.5 block">Sort By</label>
+        <label className="text-sm font-medium mb-1.5 block text-rose-900">Sort By</label>
         <Select value={sortBy} onValueChange={(v) => { setSortBy(v); setCurrentPage(1) }}>
-          <SelectTrigger>
+          <SelectTrigger className="border-rose-200 focus:border-rose-400">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -191,9 +415,9 @@ export default function HallListPage() {
       </div>
 
       <div>
-        <label className="text-sm font-medium mb-1.5 block">Order</label>
+        <label className="text-sm font-medium mb-1.5 block text-rose-900">Order</label>
         <Select value={order} onValueChange={(v) => { setOrder(v); setCurrentPage(1) }}>
-          <SelectTrigger>
+          <SelectTrigger className="border-rose-200 focus:border-rose-400">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -204,7 +428,7 @@ export default function HallListPage() {
       </div>
 
       {hasActiveFilters && (
-        <Button variant="ghost" onClick={clearFilters} className="w-full text-rose-600">
+        <Button variant="ghost" onClick={clearFilters} className="w-full text-rose-600 hover:bg-rose-50">
           <X className="w-4 h-4 mr-1" />
           Clear All Filters
         </Button>
@@ -220,16 +444,36 @@ export default function HallListPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-6"
+          className="mb-6 flex items-end justify-between"
         >
-          <h1 className="text-2xl sm:text-3xl font-bold mb-1">
-            <span className="bg-gradient-to-r from-rose-600 to-amber-600 bg-clip-text text-transparent">
-              Wedding Halls
-            </span>
-          </h1>
-          <p className="text-muted-foreground">
-            {loading ? 'Loading...' : `${total} halls found`}
-          </p>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-1">
+              <span className="bg-gradient-to-r from-rose-600 to-amber-600 bg-clip-text text-transparent">
+                Wedding Halls
+              </span>
+            </h1>
+            <p className="text-muted-foreground">
+              {loading ? 'Loading...' : `${total} halls found`}
+            </p>
+          </div>
+          <div className="hidden sm:flex items-center gap-1 bg-rose-50 p-1 rounded-lg border border-rose-100">
+            <Button
+              variant={viewMode === 'grid' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('grid')}
+              className={viewMode === 'grid' ? 'bg-rose-500 text-white hover:bg-rose-600' : 'hover:bg-rose-100'}
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </Button>
+            <Button
+              variant={viewMode === 'list' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('list')}
+              className={viewMode === 'list' ? 'bg-rose-500 text-white hover:bg-rose-600' : 'hover:bg-rose-100'}
+            >
+              <List className="w-4 h-4" />
+            </Button>
+          </div>
         </motion.div>
 
         <div className="flex gap-6">
@@ -240,8 +484,8 @@ export default function HallListPage() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="hidden lg:block w-64 shrink-0"
           >
-            <Card className="p-4 sticky top-4 border-rose-100">
-              <h3 className="font-semibold mb-4 flex items-center gap-2">
+            <Card className="p-5 sticky top-4 border-rose-100 bg-gradient-to-b from-white to-rose-50/30 shadow-sm">
+              <h3 className="font-semibold mb-4 flex items-center gap-2 text-rose-900">
                 <SlidersHorizontal className="w-4 h-4 text-rose-500" />
                 Filters
               </h3>
@@ -286,22 +530,67 @@ export default function HallListPage() {
                   className="pl-9"
                 />
               </div>
+
+              {/* Mobile view toggle */}
+              <div className="flex items-center gap-1 bg-rose-50 p-1 rounded-lg border border-rose-100">
+                <Button
+                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('grid')}
+                  className={`h-8 w-8 p-0 ${viewMode === 'grid' ? 'bg-rose-500 text-white hover:bg-rose-600' : 'hover:bg-rose-100'}`}
+                >
+                  <LayoutGrid className="w-3.5 h-3.5" />
+                </Button>
+                <Button
+                  variant={viewMode === 'list' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('list')}
+                  className={`h-8 w-8 p-0 ${viewMode === 'list' ? 'bg-rose-500 text-white hover:bg-rose-600' : 'hover:bg-rose-100'}`}
+                >
+                  <List className="w-3.5 h-3.5" />
+                </Button>
+              </div>
             </div>
 
-            {/* Hall Grid */}
+            {/* Loading Skeletons */}
             {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <Card key={i} className="overflow-hidden">
-                    <Skeleton className="h-48" />
-                    <CardContent className="p-4 space-y-2">
-                      <Skeleton className="h-5 w-3/4" />
-                      <Skeleton className="h-4 w-1/2" />
-                      <Skeleton className="h-4 w-2/3" />
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              viewMode === 'grid' ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <Card key={i} className="overflow-hidden">
+                      <Skeleton className="h-48" />
+                      <CardContent className="p-4 space-y-3">
+                        <Skeleton className="h-5 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                        <div className="flex items-center gap-0.5">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Skeleton key={s} className="w-3 h-3 rounded-sm" />
+                          ))}
+                        </div>
+                        <div className="flex justify-between">
+                          <Skeleton className="h-5 w-16" />
+                          <Skeleton className="h-5 w-24" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {[1, 2, 3, 4].map((i) => (
+                    <Card key={i} className="overflow-hidden">
+                      <div className="flex">
+                        <Skeleton className="w-40 h-32" />
+                        <CardContent className="p-4 flex-1 space-y-2">
+                          <Skeleton className="h-5 w-1/2" />
+                          <Skeleton className="h-4 w-1/3" />
+                          <Skeleton className="h-4 w-2/3" />
+                        </CardContent>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )
             ) : halls.length === 0 ? (
               <Card className="p-12 text-center border-rose-100">
                 <Building2 className="w-16 h-16 mx-auto text-rose-200 mb-4" />
@@ -313,7 +602,7 @@ export default function HallListPage() {
                   Clear Filters
                 </Button>
               </Card>
-            ) : (
+            ) : viewMode === 'grid' ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                 {halls.map((hall, index) => (
                   <motion.div
@@ -322,49 +611,30 @@ export default function HallListPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
                   >
-                    <Card
-                      className="overflow-hidden cursor-pointer group hover:shadow-lg hover:shadow-rose-200/40 transition-all duration-300 border-rose-100"
-                      onClick={() => handleHallClick(hall.hallId)}
-                    >
-                      <div className="relative h-48 overflow-hidden">
-                        {hall.images?.[0]?.imageUrl ? (
-                          <img
-                            src={hall.images[0].imageUrl}
-                            alt={hall.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-rose-100 to-amber-100 flex items-center justify-center">
-                            <Building2 className="w-14 h-14 text-rose-300" />
-                          </div>
-                        )}
-                        {hall.hasKarnaySurnay && (
-                          <Badge className="absolute top-3 right-3 bg-amber-500 text-white text-xs">
-                            <Music className="w-3 h-3 mr-1" />
-                            Karnay-Surnay
-                          </Badge>
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                      </div>
-                      <CardContent className="p-4">
-                        <h3 className="font-semibold text-base mb-1 group-hover:text-rose-600 transition-colors line-clamp-1">
-                          {hall.name}
-                        </h3>
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground mb-3">
-                          <MapPin className="w-3.5 h-3.5 shrink-0" />
-                          <span className="line-clamp-1">{hall.district}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <Badge variant="secondary" className="bg-rose-50 text-rose-700 border-rose-100">
-                            <Users className="w-3 h-3 mr-1" />
-                            {hall.capacity}
-                          </Badge>
-                          <span className="text-sm font-semibold text-rose-600">
-                            {formatPrice(hall.seatPrice)}/seat
-                          </span>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <HallCardGrid
+                      hall={hall}
+                      onHallClick={handleHallClick}
+                      onFavoriteToggle={handleFavoriteToggle}
+                      favorites={favorites}
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {halls.map((hall, index) => (
+                  <motion.div
+                    key={hall.hallId}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                  >
+                    <HallCardList
+                      hall={hall}
+                      onHallClick={handleHallClick}
+                      onFavoriteToggle={handleFavoriteToggle}
+                      favorites={favorites}
+                    />
                   </motion.div>
                 ))}
               </div>

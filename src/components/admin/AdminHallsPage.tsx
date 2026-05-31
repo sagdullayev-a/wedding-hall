@@ -8,6 +8,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Checkbox } from '@/components/ui/checkbox'
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle
+} from '@/components/ui/dialog'
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -15,9 +19,10 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
-  Search, CheckCircle, Trash2, Building2, ChevronLeft, ChevronRight
+  Search, CheckCircle, Trash2, Building2, ChevronLeft, ChevronRight,
+  Eye, CheckCheck, MapPin, Users, DollarSign, Sparkles, X, Loader2, Clock
 } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 
 interface HallOwner {
@@ -25,14 +30,21 @@ interface HallOwner {
   lastName: string
 }
 
+interface HallImage {
+  imageId: string
+  imageUrl: string
+}
+
 interface HallItem {
   hallId: string
   name: string
   district: string
+  address: string
   capacity: number
   seatPrice: number
   status: string
   owner?: HallOwner
+  images?: HallImage[]
   _count?: { images: number }
 }
 
@@ -50,6 +62,9 @@ export default function AdminHallsPage() {
   const [totalPages, setTotalPages] = useState(1)
   const [approving, setApproving] = useState<string | null>(null)
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkApproving, setBulkApproving] = useState(false)
+  const [previewHall, setPreviewHall] = useState<HallItem | null>(null)
   const limit = 10
 
   const loadHalls = useCallback(async () => {
@@ -78,6 +93,7 @@ export default function AdminHallsPage() {
 
   useEffect(() => {
     setPage(1)
+    setSelectedIds(new Set())
   }, [search, statusFilter])
 
   const handleApprove = async (hallId: string) => {
@@ -87,6 +103,11 @@ export default function AdminHallsPage() {
       setHalls(prev =>
         prev.map(h => h.hallId === hallId ? { ...h, status: 'approved' } : h)
       )
+      setSelectedIds(prev => {
+        const next = new Set(prev)
+        next.delete(hallId)
+        return next
+      })
       toast.success('To\'yxona tasdiqlandi')
     } catch {
       toast.error('Tasdiqlashda xatolik')
@@ -95,11 +116,41 @@ export default function AdminHallsPage() {
     }
   }
 
+  const handleBulkApprove = async () => {
+    if (selectedIds.size === 0) return
+    try {
+      setBulkApproving(true)
+      let successCount = 0
+      for (const hallId of selectedIds) {
+        try {
+          await api.approveHall(hallId)
+          successCount++
+        } catch {
+          // continue with others
+        }
+      }
+      setHalls(prev =>
+        prev.map(h => selectedIds.has(h.hallId) ? { ...h, status: 'approved' } : h)
+      )
+      setSelectedIds(new Set())
+      toast.success(`${successCount} ta to'yxona tasdiqlandi`)
+    } catch {
+      toast.error('Tasdiqlashda xatolik')
+    } finally {
+      setBulkApproving(false)
+    }
+  }
+
   const handleDelete = async (hallId: string) => {
     try {
       setDeleting(hallId)
       await api.deleteHall(hallId)
       setHalls(prev => prev.filter(h => h.hallId !== hallId))
+      setSelectedIds(prev => {
+        const next = new Set(prev)
+        next.delete(hallId)
+        return next
+      })
       toast.success('To\'yxona o\'chirildi')
     } catch {
       toast.error('O\'chirishda xatolik')
@@ -107,6 +158,26 @@ export default function AdminHallsPage() {
       setDeleting(null)
     }
   }
+
+  const toggleSelect = (hallId: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(hallId)) next.delete(hallId)
+      else next.add(hallId)
+      return next
+    })
+  }
+
+  const toggleSelectAll = () => {
+    const pendingHallIds = halls.filter(h => h.status === 'pending').map(h => h.hallId)
+    if (selectedIds.size === pendingHallIds.length && pendingHallIds.length > 0) {
+      setSelectedIds(new Set())
+    } else {
+      setSelectedIds(new Set(pendingHallIds))
+    }
+  }
+
+  const pendingCount = halls.filter(h => h.status === 'pending').length
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 p-4 md:p-6">
@@ -117,7 +188,10 @@ export default function AdminHallsPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">To&apos;yxonalar Boshqaruvi</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
+            <Building2 className="w-7 h-7 text-rose-500" />
+            To&apos;yxonalar Boshqaruvi
+          </h1>
           <p className="text-gray-500 mt-1">Barcha to&apos;yxonalarni ko&apos;rish va boshqarish</p>
         </motion.div>
 
@@ -149,28 +223,81 @@ export default function AdminHallsPage() {
           </Select>
         </motion.div>
 
+        {/* Bulk Actions Bar */}
+        <AnimatePresence>
+          {selectedIds.size > 0 && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mb-4"
+            >
+              <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 shadow-sm">
+                <CardContent className="p-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <CheckCheck className="w-5 h-5 text-amber-600" />
+                    <span className="text-sm font-medium text-amber-800">
+                      {selectedIds.size} ta to&apos;yxona tanlangan
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      onClick={handleBulkApprove}
+                      disabled={bulkApproving}
+                      className="bg-emerald-500 hover:bg-emerald-600 text-white h-8"
+                    >
+                      {bulkApproving ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5 mr-1" />}
+                      Hammasini Tasdiqlash
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setSelectedIds(new Set())}
+                      className="h-8 text-amber-700 hover:bg-amber-100"
+                    >
+                      <X className="w-3.5 h-3.5 mr-1" />
+                      Bekor Qilish
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Table */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
         >
-          <Card className="shadow-md border-0">
+          <Card className="shadow-md border-0 bg-white">
             <CardContent className="p-0">
               {loading ? (
                 <div className="p-4 space-y-3">
-                  {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-14" />)}
+                  {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-14 rounded-lg" />)}
                 </div>
               ) : halls.length === 0 ? (
-                <div className="text-center py-12 text-gray-400">
-                  <Building2 className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                  <p>To&apos;yxonalar topilmadi</p>
+                <div className="text-center py-16 text-gray-400">
+                  <div className="bg-rose-50 w-24 h-24 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <Building2 className="w-12 h-12 text-rose-300" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-500 mb-1">To&apos;yxonalar topilmadi</h3>
+                  <p className="text-sm text-gray-400">Qidiruv shartlarini o&apos;zgartirib ko&apos;ring</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-rose-100 bg-rose-50/50">
+                      <tr className="border-b border-rose-100 bg-gradient-to-r from-rose-50/50 to-amber-50/30">
+                        <th className="text-left py-3 px-3 w-10">
+                          <Checkbox
+                            checked={pendingCount > 0 && selectedIds.size === pendingCount}
+                            onCheckedChange={toggleSelectAll}
+                            className="border-rose-300"
+                          />
+                        </th>
                         <th className="text-left py-3 px-4 font-semibold text-gray-600">Nomi</th>
                         <th className="text-left py-3 px-4 font-semibold text-gray-600">Ega</th>
                         <th className="text-left py-3 px-4 font-semibold text-gray-600">Tuman</th>
@@ -181,28 +308,61 @@ export default function AdminHallsPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {halls.map((hall) => (
-                        <tr key={hall.hallId} className="border-b border-rose-50 hover:bg-rose-50/30 transition-colors">
-                          <td className="py-3 px-4 font-medium text-gray-900">{hall.name}</td>
+                      {halls.map((hall, index) => (
+                        <motion.tr
+                          key={hall.hallId}
+                          initial={{ opacity: 0, x: -5 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.03 }}
+                          className={`border-b border-rose-50 hover:bg-rose-50/30 transition-all duration-200 ${selectedIds.has(hall.hallId) ? 'bg-amber-50/50' : ''}`}
+                        >
+                          <td className="py-3 px-3">
+                            {hall.status === 'pending' && (
+                              <Checkbox
+                                checked={selectedIds.has(hall.hallId)}
+                                onCheckedChange={() => toggleSelect(hall.hallId)}
+                                className="border-amber-400"
+                              />
+                            )}
+                          </td>
+                          <td className="py-3 px-4">
+                            <button
+                              onClick={() => setPreviewHall(hall)}
+                              className="font-medium text-gray-900 hover:text-rose-600 transition-colors flex items-center gap-1.5 group"
+                            >
+                              {hall.name}
+                              <Eye className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-rose-400 transition-opacity" />
+                            </button>
+                          </td>
                           <td className="py-3 px-4 text-gray-600">
                             {hall.owner ? `${hall.owner.firstName} ${hall.owner.lastName}` : 'N/A'}
                           </td>
                           <td className="py-3 px-4 text-gray-600">{hall.district}</td>
                           <td className="py-3 px-4 text-gray-600">{hall.capacity}</td>
-                          <td className="py-3 px-4 text-gray-600">{formatPrice(hall.seatPrice)}</td>
+                          <td className="py-3 px-4 text-gray-900 font-medium">{formatPrice(hall.seatPrice)}</td>
                           <td className="py-3 px-4">
-                            <Badge
-                              className={
-                                hall.status === 'approved'
-                                  ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100'
-                                  : 'bg-amber-100 text-amber-700 hover:bg-amber-100'
-                              }
-                            >
-                              {hall.status === 'approved' ? 'Tasdiqlangan' : 'Kutilmoqda'}
-                            </Badge>
+                            {hall.status === 'approved' ? (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                Tasdiqlangan
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                                Kutilmoqda
+                              </span>
+                            )}
                           </td>
                           <td className="py-3 px-4">
                             <div className="flex items-center gap-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setPreviewHall(hall)}
+                                className="text-gray-500 hover:text-rose-600 hover:bg-rose-50 h-8 w-8 p-0"
+                              >
+                                <Eye className="w-4 h-4" />
+                              </Button>
                               {hall.status === 'pending' && (
                                 <Button
                                   size="sm"
@@ -210,19 +370,19 @@ export default function AdminHallsPage() {
                                   disabled={approving === hall.hallId}
                                   className="bg-emerald-500 hover:bg-emerald-600 text-white h-8"
                                 >
-                                  <CheckCircle className="w-3.5 h-3.5 mr-1" />
+                                  {approving === hall.hallId ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5 mr-1" />}
                                   Tasdiqlash
                                 </Button>
                               )}
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                   <Button
-                                    variant="outline"
+                                    variant="ghost"
                                     size="sm"
-                                    className="text-red-600 border-red-200 hover:bg-red-50 h-8"
+                                    className="text-red-500 hover:text-red-600 hover:bg-red-50 h-8 w-8 p-0"
                                     disabled={deleting === hall.hallId}
                                   >
-                                    <Trash2 className="w-3.5 h-3.5" />
+                                    <Trash2 className="w-4 h-4" />
                                   </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
@@ -245,7 +405,7 @@ export default function AdminHallsPage() {
                               </AlertDialog>
                             </div>
                           </td>
-                        </tr>
+                        </motion.tr>
                       ))}
                     </tbody>
                   </table>
@@ -284,6 +444,92 @@ export default function AdminHallsPage() {
           </Card>
         </motion.div>
       </div>
+
+      {/* Hall Preview Modal */}
+      <Dialog open={!!previewHall} onOpenChange={(open) => !open && setPreviewHall(null)}>
+        <DialogContent className="sm:max-w-lg">
+          {previewHall && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-rose-500" />
+                  To&apos;yxona Tafsilotlari
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                {/* Image */}
+                <div className="rounded-xl overflow-hidden h-48 bg-gradient-to-br from-rose-100 to-pink-100">
+                  {previewHall.images && previewHall.images.length > 0 ? (
+                    <img
+                      src={previewHall.images[0].imageUrl}
+                      alt={previewHall.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Building2 className="w-16 h-16 text-rose-300" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Info */}
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between">
+                    <h3 className="text-xl font-bold text-gray-900">{previewHall.name}</h3>
+                    {previewHall.status === 'approved' ? (
+                      <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-50">
+                        <CheckCircle className="w-3 h-3 mr-1" />
+                        Tasdiqlangan
+                      </Badge>
+                    ) : (
+                      <Badge className="bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-50">
+                        <Clock className="w-3 h-3 mr-1" />
+                        Kutilmoqda
+                      </Badge>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <MapPin className="w-4 h-4 text-rose-400" />
+                      <span>{previewHall.district}, {previewHall.address || 'Manzil ko\'rsatilmagan'}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Users className="w-4 h-4 text-rose-400" />
+                      <span>{previewHall.capacity} kishi sig&apos;imi</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <DollarSign className="w-4 h-4 text-rose-400" />
+                      <span className="font-semibold text-gray-900">{formatPrice(previewHall.seatPrice)} / o&apos;rindiq</span>
+                    </div>
+                    {previewHall.owner && (
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Users className="w-4 h-4 text-rose-400" />
+                        <span>Ega: {previewHall.owner.firstName} {previewHall.owner.lastName}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                {previewHall.status === 'pending' && (
+                  <Button
+                    onClick={() => {
+                      handleApprove(previewHall.hallId)
+                      setPreviewHall(null)
+                    }}
+                    disabled={approving === previewHall.hallId}
+                    className="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white shadow-lg shadow-emerald-200/50"
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Tasdiqlash
+                  </Button>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

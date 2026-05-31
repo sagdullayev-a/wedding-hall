@@ -214,6 +214,32 @@ class ApiClient {
   async seedData() {
     return this.request('/admin/seed', { method: 'POST' })
   }
+
+  // Reviews
+  async getHallReviews(hallId: string) {
+    return this.request(`/halls/${hallId}/reviews`)
+  }
+
+  async createReview(hallId: string, data: { rating: number; comment?: string }) {
+    return this.request(`/halls/${hallId}/reviews`, { method: 'POST', body: JSON.stringify(data) })
+  }
+
+  // Favorites
+  async checkFavorite(hallId: string) {
+    return this.request(`/halls/${hallId}/favorite`)
+  }
+
+  async addFavorite(hallId: string) {
+    return this.request(`/halls/${hallId}/favorite`, { method: 'POST' })
+  }
+
+  async removeFavorite(hallId: string) {
+    return this.request(`/halls/${hallId}/favorite`, { method: 'DELETE' })
+  }
+
+  async getFavorites() {
+    return this.request('/favorites')
+  }
 }
 
 export const api = new ApiClient()

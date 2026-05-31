@@ -32,6 +32,7 @@ import {
   Users,
   ClipboardList,
   Landmark,
+  Star,
 } from 'lucide-react'
 
 export default function Header() {
@@ -89,6 +90,7 @@ export default function Header() {
         return [
           { label: 'Browse Halls', view: 'halls' as const, icon: Landmark },
           { label: 'My Bookings', view: 'my-bookings' as const, icon: CalendarDays },
+          { label: 'Favorites', view: 'favorites' as const, icon: Heart },
         ]
     }
   }
@@ -184,6 +186,15 @@ export default function Header() {
                   <CalendarDays className="mr-2 h-4 w-4" />
                   My Bookings
                 </DropdownMenuItem>
+                {user?.role === 'customer' && (
+                  <DropdownMenuItem
+                    onClick={() => handleNavigate('favorites')}
+                    className="cursor-pointer"
+                  >
+                    <Heart className="mr-2 h-4 w-4" />
+                    Favorites
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={handleLogout}

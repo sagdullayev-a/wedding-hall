@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, ArrowRight, Calendar, Users, Music, Utensils,
   Car, Check, CreditCard, User, ChevronLeft, ChevronRight,
-  Building2, Sparkles, Loader2
+  Building2, Sparkles, Loader2, PartyPopper, Star
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import { api } from '@/lib/api'
@@ -82,12 +82,107 @@ const STEPS = [
   { label: 'Payment', icon: CreditCard },
 ]
 
+// Confetti component
+function Confetti() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+
+    const particles: {
+      x: number
+      y: number
+      vx: number
+      vy: number
+      color: string
+      size: number
+      rotation: number
+      rotationSpeed: number
+      shape: 'circle' | 'rect'
+    }[] = []
+
+    const colors = ['#f43f5e', '#ec4899', '#f59e0b', '#10b981', '#a855f7', '#f97316']
+
+    for (let i = 0; i < 120; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: -20 - Math.random() * 200,
+        vx: (Math.random() - 0.5) * 8,
+        vy: Math.random() * 4 + 2,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        size: Math.random() * 8 + 4,
+        rotation: Math.random() * 360,
+        rotationSpeed: (Math.random() - 0.5) * 10,
+        shape: Math.random() > 0.5 ? 'circle' : 'rect',
+      })
+    }
+
+    let animationId: number
+    let frame = 0
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      frame++
+
+      for (const p of particles) {
+        p.x += p.vx
+        p.vy += 0.1
+        p.y += p.vy
+        p.rotation += p.rotationSpeed
+        p.vx *= 0.99
+
+        ctx.save()
+        ctx.translate(p.x, p.y)
+        ctx.rotate((p.rotation * Math.PI) / 180)
+        ctx.globalAlpha = Math.max(0, 1 - frame / 150)
+        ctx.fillStyle = p.color
+
+        if (p.shape === 'circle') {
+          ctx.beginPath()
+          ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2)
+          ctx.fill()
+        } else {
+          ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2)
+        }
+
+        ctx.restore()
+      }
+
+      if (frame < 150) {
+        animationId = requestAnimationFrame(animate)
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+      }
+    }
+
+    animate()
+
+    return () => {
+      cancelAnimationFrame(animationId)
+    }
+  }, [])
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 pointer-events-none z-50"
+    />
+  )
+}
+
 export default function BookingPage() {
   const { selectedHallId, selectedBookingDate, navigateTo, token, user, setSelectedBookingDate } = useAppStore()
   const [hall, setHall] = useState<Hall | null>(null)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
+  const [bookingComplete, setBookingComplete] = useState(false)
 
   // Step 1: Date
   const [bookingDate, setBookingDate] = useState(selectedBookingDate || '')
@@ -121,7 +216,6 @@ export default function BookingPage() {
     }
   }, [selectedHallId, calMonth, calYear])
 
-  // Pre-fill user info when user data loads
   useEffect(() => {
     if (user) {
       if (!firstName) setFirstName(user.firstName)
@@ -130,7 +224,6 @@ export default function BookingPage() {
     }
   }, [user])
 
-  // Set calendar to selected date's month/year
   useEffect(() => {
     if (selectedBookingDate) {
       const d = new Date(selectedBookingDate)
@@ -211,7 +304,6 @@ export default function BookingPage() {
 
   const calendarDays = getCalendarDays()
 
-  // Validation
   const validateStep = (step: number): boolean => {
     switch (step) {
       case 1:
@@ -231,7 +323,7 @@ export default function BookingPage() {
         }
         return true
       case 3:
-        return true // Services are optional
+        return true
       case 4:
         if (!firstName.trim()) {
           toast.error('First name is required')
@@ -291,9 +383,8 @@ export default function BookingPage() {
         phone,
       })
 
+      setBookingComplete(true)
       toast.success('Payment Successful! Your booking has been confirmed.')
-      setSelectedBookingDate(null)
-      navigateTo('my-bookings')
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to create booking'
       toast.error(message)
@@ -304,7 +395,7 @@ export default function BookingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <div className="animate-pulse space-y-6">
           <div className="h-8 w-40 bg-rose-100 rounded" />
           <div className="h-4 w-64 bg-rose-50 rounded" />
@@ -316,7 +407,7 @@ export default function BookingPage() {
 
   if (!hall) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <Card className="p-12 text-center">
           <Building2 className="w-16 h-16 mx-auto text-rose-200 mb-4" />
           <h3 className="text-lg font-semibold mb-2">Hall Not Found</h3>
@@ -329,9 +420,58 @@ export default function BookingPage() {
     )
   }
 
+  // Booking Complete Screen
+  if (bookingComplete) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white flex items-center justify-center">
+        <Confetti />
+        <motion.div
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+          className="text-center max-w-md mx-auto px-4"
+        >
+          <motion.div
+            initial={{ rotate: -10 }}
+            animate={{ rotate: 0 }}
+            transition={{ delay: 0.3, type: 'spring' }}
+            className="w-24 h-24 bg-gradient-to-br from-rose-400 to-pink-500 rounded-full mx-auto mb-6 flex items-center justify-center shadow-xl shadow-rose-200"
+          >
+            <PartyPopper className="w-12 h-12 text-white" />
+          </motion.div>
+          <h2 className="text-2xl font-bold mb-2">Booking Confirmed!</h2>
+          <p className="text-muted-foreground mb-6">
+            Your wedding hall has been booked successfully. We&apos;ve sent the details to your phone.
+          </p>
+          <div className="space-y-3">
+            <Button
+              onClick={() => {
+                setSelectedBookingDate(null)
+                navigateTo('my-bookings')
+              }}
+              className="w-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white"
+            >
+              View My Bookings
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSelectedBookingDate(null)
+                navigateTo('halls')
+              }}
+              className="w-full border-rose-200 text-rose-600"
+            >
+              Browse More Halls
+            </Button>
+          </div>
+        </motion.div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
         {/* Back button */}
         <Button
           variant="ghost"
@@ -361,29 +501,45 @@ export default function BookingPage() {
           </CardContent>
         </Card>
 
-        {/* Step Indicator */}
+        {/* Step Indicator with connecting lines */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-3">
+          <div className="relative flex items-center justify-between mb-3">
+            {/* Connecting line behind circles */}
+            <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-100" />
+            <motion.div
+              className="absolute top-5 left-0 h-0.5 bg-gradient-to-r from-rose-500 to-pink-500"
+              initial={{ width: 0 }}
+              animate={{ width: `${((currentStep - 1) / 4) * 100}%` }}
+              transition={{ duration: 0.4 }}
+            />
+
             {STEPS.map((step, index) => {
               const stepNum = index + 1
               const isActive = stepNum === currentStep
               const isCompleted = stepNum < currentStep
               return (
-                <div key={stepNum} className="flex flex-col items-center gap-1.5">
-                  <div
+                <div key={stepNum} className="relative flex flex-col items-center gap-1.5 z-10">
+                  <motion.div
                     className={`
                       w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
-                      ${isActive ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-md shadow-rose-200' : ''}
-                      ${isCompleted ? 'bg-emerald-500 text-white' : ''}
-                      ${!isActive && !isCompleted ? 'bg-gray-100 text-gray-400' : ''}
+                      ${isActive ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-lg shadow-rose-200' : ''}
+                      ${isCompleted ? 'bg-emerald-500 text-white shadow-md shadow-emerald-100' : ''}
+                      ${!isActive && !isCompleted ? 'bg-white text-gray-400 border-2 border-gray-200' : ''}
                     `}
+                    whileHover={isCompleted ? { scale: 1.1 } : {}}
                   >
                     {isCompleted ? (
-                      <Check className="w-5 h-5" />
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: 'spring', stiffness: 300 }}
+                      >
+                        <Check className="w-5 h-5" />
+                      </motion.div>
                     ) : (
                       <step.icon className="w-4 h-4" />
                     )}
-                  </div>
+                  </motion.div>
                   <span className={`text-xs font-medium ${isActive ? 'text-rose-600' : isCompleted ? 'text-emerald-600' : 'text-gray-400'}`}>
                     {step.label}
                   </span>
@@ -391,592 +547,661 @@ export default function BookingPage() {
               )
             })}
           </div>
-          {/* Progress bar */}
-          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-gradient-to-r from-rose-500 to-pink-600 rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${((currentStep - 1) / 4) * 100}%` }}
-              transition={{ duration: 0.3 }}
-            />
-          </div>
         </div>
 
-        {/* Step Content */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentStep}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            {/* Step 1: Select Date */}
-            {currentStep === 1 && (
-              <Card className="border-rose-100">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-1">Select Your Date</h3>
-                  <p className="text-muted-foreground text-sm mb-6">Choose an available date for your wedding</p>
+        {/* Main content area with sidebar */}
+        <div className="flex gap-6">
+          {/* Step Content */}
+          <div className="flex-1 min-w-0">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentStep}
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -30 }}
+                transition={{ duration: 0.3 }}
+              >
+                {/* Step 1: Select Date */}
+                {currentStep === 1 && (
+                  <Card className="border-rose-100">
+                    <CardContent className="p-6">
+                      <h3 className="text-xl font-bold mb-1">Select Your Date</h3>
+                      <p className="text-muted-foreground text-sm mb-6">Choose an available date for your wedding</p>
 
-                  <div className="max-w-sm mx-auto">
-                    <div className="flex items-center justify-between mb-4">
-                      <Button variant="ghost" size="icon" onClick={() => {
-                        if (calMonth === 1) { setCalMonth(12); setCalYear(calYear - 1) }
-                        else setCalMonth(calMonth - 1)
-                      }} className="h-8 w-8 hover:bg-rose-50">
-                        <ChevronLeft className="w-4 h-4" />
-                      </Button>
-                      <h4 className="font-semibold">{MONTH_NAMES[calMonth - 1]} {calYear}</h4>
-                      <Button variant="ghost" size="icon" onClick={() => {
-                        if (calMonth === 12) { setCalMonth(1); setCalYear(calYear + 1) }
-                        else setCalMonth(calMonth + 1)
-                      }} className="h-8 w-8 hover:bg-rose-50">
-                        <ChevronRight className="w-4 h-4" />
-                      </Button>
+                      <div className="max-w-sm mx-auto">
+                        <div className="flex items-center justify-between mb-4">
+                          <Button variant="ghost" size="icon" onClick={() => {
+                            if (calMonth === 1) { setCalMonth(12); setCalYear(calYear - 1) }
+                            else setCalMonth(calMonth - 1)
+                          }} className="h-8 w-8 hover:bg-rose-50">
+                            <ChevronLeft className="w-4 h-4" />
+                          </Button>
+                          <h4 className="font-semibold">{MONTH_NAMES[calMonth - 1]} {calYear}</h4>
+                          <Button variant="ghost" size="icon" onClick={() => {
+                            if (calMonth === 12) { setCalMonth(1); setCalYear(calYear + 1) }
+                            else setCalMonth(calMonth + 1)
+                          }} className="h-8 w-8 hover:bg-rose-50">
+                            <ChevronRight className="w-4 h-4" />
+                          </Button>
+                        </div>
+
+                        <div className="grid grid-cols-7 gap-1 mb-1">
+                          {DAY_NAMES.map((d) => (
+                            <div key={d} className="text-center text-xs font-medium text-muted-foreground py-1">{d}</div>
+                          ))}
+                        </div>
+
+                        <div className="grid grid-cols-7 gap-1">
+                          {calendarDays.map((day, idx) => {
+                            if (day === null) return <div key={`e-${idx}`} className="aspect-square" />
+                            const status = getDayStatus(day)
+                            const isSelected = bookingDate === `${calYear}-${String(calMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+                            return (
+                              <motion.button
+                                key={day}
+                                onClick={() => status === 'available' && handleDateSelect(day)}
+                                disabled={status !== 'available'}
+                                whileHover={status === 'available' ? { scale: 1.1 } : {}}
+                                whileTap={status === 'available' ? { scale: 0.95 } : {}}
+                                className={`
+                                  aspect-square rounded-lg text-sm font-medium flex items-center justify-center transition-all
+                                  ${status === 'available' && !isSelected && 'bg-green-100 text-green-800 hover:bg-green-200 cursor-pointer border border-green-200'}
+                                  ${status === 'available' && isSelected && 'bg-rose-500 text-white cursor-pointer border-2 border-rose-500 shadow-md shadow-rose-200 scale-105'}
+                                  ${status === 'booked' && 'bg-red-100 text-red-800 cursor-not-allowed border border-red-200 line-through'}
+                                  ${status === 'past' && 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'}
+                                `}
+                              >
+                                {day}
+                              </motion.button>
+                            )
+                          })}
+                        </div>
+
+                        <div className="flex items-center gap-3 mt-4 text-xs">
+                          <div className="flex items-center gap-1">
+                            <div className="w-3 h-3 rounded bg-green-100 border border-green-200" />
+                            <span className="text-muted-foreground">Available</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div className="w-3 h-3 rounded bg-rose-500 border-2 border-rose-500" />
+                            <span className="text-muted-foreground">Selected</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div className="w-3 h-3 rounded bg-red-100 border border-red-200" />
+                            <span className="text-muted-foreground">Booked</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div className="w-3 h-3 rounded bg-gray-100 border border-gray-200" />
+                            <span className="text-muted-foreground">Past</span>
+                          </div>
+                        </div>
+
+                        {bookingDate && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-4 p-4 bg-gradient-to-r from-rose-50 to-amber-50 rounded-xl border border-rose-100 text-center"
+                          >
+                            <p className="text-sm text-muted-foreground">Selected Date</p>
+                            <p className="font-bold text-rose-600 text-lg">
+                              {new Date(bookingDate + 'T00:00:00').toLocaleDateString('en-US', {
+                                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                              })}
+                            </p>
+                          </motion.div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Step 2: Guest Count */}
+                {currentStep === 2 && (
+                  <Card className="border-rose-100">
+                    <CardContent className="p-6">
+                      <h3 className="text-xl font-bold mb-1">Enter Guest Count</h3>
+                      <p className="text-muted-foreground text-sm mb-6">
+                        Hall capacity: {hall.capacity} guests
+                      </p>
+
+                      <div className="max-w-sm mx-auto space-y-6">
+                        <div>
+                          <Label htmlFor="guestCount" className="text-base font-medium mb-2 block">
+                            Number of Guests
+                          </Label>
+                          <div className="relative">
+                            <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-rose-400" />
+                            <Input
+                              id="guestCount"
+                              type="number"
+                              placeholder="Enter number of guests"
+                              value={guestCount}
+                              onChange={(e) => setGuestCount(e.target.value)}
+                              min={1}
+                              max={hall.capacity}
+                              className="pl-10 h-12 text-lg"
+                            />
+                          </div>
+                          {hall && parseInt(guestCount) > hall.capacity && (
+                            <p className="text-sm text-red-500 mt-1">
+                              Exceeds hall capacity of {hall.capacity} guests
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Quick select buttons */}
+                        <div className="flex flex-wrap gap-2">
+                          {[50, 100, 150, 200, 300, 500].map((num) => (
+                            <Button
+                              key={num}
+                              variant={guestNum === num ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => setGuestCount(String(num))}
+                              className={
+                                guestNum === num
+                                  ? 'bg-rose-500 text-white border-rose-500'
+                                  : 'border-rose-200 text-rose-600 hover:bg-rose-50'
+                              }
+                            >
+                              {num}
+                            </Button>
+                          ))}
+                        </div>
+
+                        {guestNum > 0 && guestNum <= hall.capacity && (
+                          <Card className="bg-gradient-to-r from-rose-50 to-amber-50 border-rose-100">
+                            <CardContent className="p-4">
+                              <div className="space-y-2">
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-muted-foreground">Price per seat</span>
+                                  <span>{formatPrice(hall.seatPrice)}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-muted-foreground">Guest count</span>
+                                  <span>× {guestNum}</span>
+                                </div>
+                                <Separator className="bg-rose-200" />
+                                <div className="flex justify-between font-semibold">
+                                  <span>Base Price</span>
+                                  <span className="text-rose-600">{formatPrice(basePrice)}</span>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Step 3: Select Services */}
+                {currentStep === 3 && (
+                  <Card className="border-rose-100">
+                    <CardContent className="p-6">
+                      <h3 className="text-xl font-bold mb-1">Select Optional Services</h3>
+                      <p className="text-muted-foreground text-sm mb-6">
+                        Enhance your wedding with these additional services
+                      </p>
+
+                      <div className="space-y-6">
+                        {/* Karnay Surnay */}
+                        {hall.hasKarnaySurnay && (
+                          <div>
+                            <h4 className="font-semibold mb-3 flex items-center gap-2">
+                              <Music className="w-4 h-4 text-amber-500" />
+                              Karnay-Surnay
+                            </h4>
+                            <motion.div
+                              whileHover={{ scale: 1.01 }}
+                              whileTap={{ scale: 0.99 }}
+                              className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-colors ${
+                                includeKarnaySurnay
+                                  ? 'border-rose-300 bg-rose-50'
+                                  : 'border-rose-100 hover:bg-rose-50/50'
+                              }`}
+                              onClick={() => setIncludeKarnaySurnay(!includeKarnaySurnay)}
+                            >
+                              <Checkbox
+                                checked={includeKarnaySurnay}
+                                onCheckedChange={() => setIncludeKarnaySurnay(!includeKarnaySurnay)}
+                              />
+                              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center shrink-0">
+                                <Music className="w-6 h-6 text-amber-500" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="font-medium text-sm">Karnay-Surnay Service</p>
+                                <p className="text-xs text-muted-foreground">Traditional wedding music</p>
+                              </div>
+                              <span className="text-sm font-semibold text-rose-600">{formatPrice(hall.karnaySurnayPrice || 0)}</span>
+                            </motion.div>
+                          </div>
+                        )}
+
+                        {/* Singers */}
+                        {hall.singers.length > 0 && (
+                          <div>
+                            <h4 className="font-semibold mb-3 flex items-center gap-2">
+                              <Music className="w-4 h-4 text-rose-500" />
+                              Singers
+                            </h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              {hall.singers.map((singer) => {
+                                const isSelected = selectedSingers.includes(singer.singerId)
+                                return (
+                                  <motion.div
+                                    key={singer.singerId}
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-colors ${
+                                      isSelected
+                                        ? 'border-rose-300 bg-rose-50'
+                                        : 'border-rose-100 hover:bg-rose-50/50'
+                                    }`}
+                                    onClick={() => {
+                                      setSelectedSingers((prev) =>
+                                        prev.includes(singer.singerId)
+                                          ? prev.filter((id) => id !== singer.singerId)
+                                          : [...prev, singer.singerId]
+                                      )
+                                    }}
+                                  >
+                                    <Checkbox
+                                      checked={isSelected}
+                                      onCheckedChange={() => {
+                                        setSelectedSingers((prev) =>
+                                          prev.includes(singer.singerId)
+                                            ? prev.filter((id) => id !== singer.singerId)
+                                            : [...prev, singer.singerId]
+                                        )
+                                      }}
+                                    />
+                                    <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-rose-100">
+                                      {singer.imageUrl ? (
+                                        <img src={singer.imageUrl} alt={singer.singerName} className="w-full h-full object-cover" />
+                                      ) : (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                          <Music className="w-5 h-5 text-rose-400" />
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="font-medium text-sm truncate">{singer.singerName}</p>
+                                      <p className="text-xs text-rose-600 font-medium">{formatPrice(singer.price)}</p>
+                                    </div>
+                                  </motion.div>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Menus */}
+                        {hall.menus.length > 0 && (
+                          <div>
+                            <h4 className="font-semibold mb-3 flex items-center gap-2">
+                              <Utensils className="w-4 h-4 text-amber-500" />
+                              Menus
+                            </h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              {hall.menus.map((menu) => {
+                                const isSelected = selectedMenus.includes(menu.menuId)
+                                return (
+                                  <motion.div
+                                    key={menu.menuId}
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-colors ${
+                                      isSelected
+                                        ? 'border-amber-300 bg-amber-50'
+                                        : 'border-rose-100 hover:bg-rose-50/50'
+                                    }`}
+                                    onClick={() => {
+                                      setSelectedMenus((prev) =>
+                                        prev.includes(menu.menuId)
+                                          ? prev.filter((id) => id !== menu.menuId)
+                                          : [...prev, menu.menuId]
+                                      )
+                                    }}
+                                  >
+                                    <Checkbox
+                                      checked={isSelected}
+                                      onCheckedChange={() => {
+                                        setSelectedMenus((prev) =>
+                                          prev.includes(menu.menuId)
+                                            ? prev.filter((id) => id !== menu.menuId)
+                                            : [...prev, menu.menuId]
+                                        )
+                                      }}
+                                    />
+                                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center shrink-0">
+                                      <Utensils className="w-5 h-5 text-amber-500" />
+                                    </div>
+                                    <p className="font-medium text-sm">{menu.menuName}</p>
+                                  </motion.div>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Cars */}
+                        {hall.cars.length > 0 && (
+                          <div>
+                            <h4 className="font-semibold mb-3 flex items-center gap-2">
+                              <Car className="w-4 h-4 text-rose-500" />
+                              Cars
+                            </h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              {hall.cars.map((car) => {
+                                const isSelected = selectedCars.includes(car.carId)
+                                return (
+                                  <motion.div
+                                    key={car.carId}
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-colors ${
+                                      isSelected
+                                        ? 'border-rose-300 bg-rose-50'
+                                        : 'border-rose-100 hover:bg-rose-50/50'
+                                    }`}
+                                    onClick={() => {
+                                      setSelectedCars((prev) =>
+                                        prev.includes(car.carId)
+                                          ? prev.filter((id) => id !== car.carId)
+                                          : [...prev, car.carId]
+                                      )
+                                    }}
+                                  >
+                                    <Checkbox
+                                      checked={isSelected}
+                                      onCheckedChange={() => {
+                                        setSelectedCars((prev) =>
+                                          prev.includes(car.carId)
+                                            ? prev.filter((id) => id !== car.carId)
+                                            : [...prev, car.carId]
+                                        )
+                                      }}
+                                    />
+                                    <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-rose-100">
+                                      {car.imageUrl ? (
+                                        <img src={car.imageUrl} alt={car.brand} className="w-full h-full object-cover" />
+                                      ) : (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                          <Car className="w-5 h-5 text-rose-400" />
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="font-medium text-sm truncate">{car.brand}</p>
+                                      <p className="text-xs text-rose-600 font-medium">{formatPrice(car.price)}</p>
+                                    </div>
+                                  </motion.div>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Step 4: Personal Info */}
+                {currentStep === 4 && (
+                  <Card className="border-rose-100">
+                    <CardContent className="p-6">
+                      <h3 className="text-xl font-bold mb-1">Enter Your Information</h3>
+                      <p className="text-muted-foreground text-sm mb-6">
+                        We need your contact details for the booking
+                      </p>
+
+                      <div className="max-w-md mx-auto space-y-4">
+                        <div>
+                          <Label htmlFor="firstName">First Name</Label>
+                          <Input
+                            id="firstName"
+                            placeholder="Enter your first name"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            className="mt-1.5"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="lastName">Last Name</Label>
+                          <Input
+                            id="lastName"
+                            placeholder="Enter your last name"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            className="mt-1.5"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="phone">Phone Number</Label>
+                          <Input
+                            id="phone"
+                            placeholder="+998 90 123 45 67"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            className="mt-1.5"
+                          />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Step 5: Review & Payment */}
+                {currentStep === 5 && (
+                  <Card className="border-rose-100">
+                    <CardContent className="p-6">
+                      <h3 className="text-xl font-bold mb-1">Review & Payment</h3>
+                      <p className="text-muted-foreground text-sm mb-6">
+                        Please review your booking details before payment
+                      </p>
+
+                      <div className="space-y-4">
+                        {/* Booking Summary */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="p-3 rounded-xl bg-rose-50/50 border border-rose-100">
+                            <p className="text-xs text-muted-foreground mb-1">Wedding Hall</p>
+                            <p className="font-semibold">{hall.name}</p>
+                            <p className="text-sm text-muted-foreground">{hall.district}</p>
+                          </div>
+                          <div className="p-3 rounded-xl bg-rose-50/50 border border-rose-100">
+                            <p className="text-xs text-muted-foreground mb-1">Date</p>
+                            <p className="font-semibold">
+                              {new Date(bookingDate + 'T00:00:00').toLocaleDateString('en-US', {
+                                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                              })}
+                            </p>
+                          </div>
+                          <div className="p-3 rounded-xl bg-rose-50/50 border border-rose-100">
+                            <p className="text-xs text-muted-foreground mb-1">Guest Count</p>
+                            <p className="font-semibold">{guestNum} guests</p>
+                          </div>
+                          <div className="p-3 rounded-xl bg-rose-50/50 border border-rose-100">
+                            <p className="text-xs text-muted-foreground mb-1">Contact</p>
+                            <p className="font-semibold">{firstName} {lastName}</p>
+                            <p className="text-sm text-muted-foreground">{phone}</p>
+                          </div>
+                        </div>
+
+                        {/* Services Summary */}
+                        {(selectedSingers.length > 0 || selectedMenus.length > 0 || selectedCars.length > 0 || includeKarnaySurnay) && (
+                          <div className="p-3 rounded-xl bg-amber-50/50 border border-amber-100">
+                            <p className="text-xs text-muted-foreground mb-2">Selected Services</p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {includeKarnaySurnay && (
+                                <Badge className="bg-amber-100 text-amber-800 border-amber-200">
+                                  <Music className="w-3 h-3 mr-1" />
+                                  Karnay-Surnay — {formatPrice(karnaySurnayTotal)}
+                                </Badge>
+                              )}
+                              {selectedSingers.map((id) => {
+                                const singer = hall.singers.find((s) => s.singerId === id)
+                                return singer ? (
+                                  <Badge key={id} className="bg-rose-100 text-rose-800 border-rose-200">
+                                    <Music className="w-3 h-3 mr-1" />
+                                    {singer.singerName} — {formatPrice(singer.price)}
+                                  </Badge>
+                                ) : null
+                              })}
+                              {selectedMenus.map((id) => {
+                                const menu = hall.menus.find((m) => m.menuId === id)
+                                return menu ? (
+                                  <Badge key={id} className="bg-amber-100 text-amber-800 border-amber-200">
+                                    <Utensils className="w-3 h-3 mr-1" />
+                                    {menu.menuName}
+                                  </Badge>
+                                ) : null
+                              })}
+                              {selectedCars.map((id) => {
+                                const car = hall.cars.find((c) => c.carId === id)
+                                return car ? (
+                                  <Badge key={id} className="bg-rose-100 text-rose-800 border-rose-200">
+                                    <Car className="w-3 h-3 mr-1" />
+                                    {car.brand} — {formatPrice(car.price)}
+                                  </Badge>
+                                ) : null
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Navigation Buttons */}
+            <div className="flex items-center justify-between mt-6">
+              <Button
+                variant="outline"
+                onClick={currentStep === 1 ? () => navigateTo('hall-detail') : handleBack}
+                className="border-rose-200"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                {currentStep === 1 ? 'Back to Hall' : 'Previous'}
+              </Button>
+
+              {currentStep < 5 ? (
+                <Button
+                  onClick={handleNext}
+                  className="bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white"
+                >
+                  Next Step
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={handlePayment}
+                  disabled={submitting}
+                  className="bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white"
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Pay Advance — {formatPrice(advancePayment)}
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {/* Sticky Price Summary Sidebar */}
+          <div className="hidden lg:block w-72 shrink-0">
+            <div className="sticky top-4">
+              <Card className="border-rose-100 bg-gradient-to-b from-white to-rose-50/30 shadow-sm">
+                <CardContent className="p-5">
+                  <h4 className="font-bold mb-4 flex items-center gap-2">
+                    <Star className="w-4 h-4 text-amber-500" />
+                    Price Summary
+                  </h4>
+                  <div className="space-y-3">
+                    {bookingDate && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Date</span>
+                        <span className="font-medium text-xs">
+                          {new Date(bookingDate + 'T00:00:00').toLocaleDateString('en-US', {
+                            month: 'short', day: 'numeric'
+                          })}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Guests</span>
+                      <span className="font-medium">{guestNum || '—'}</span>
                     </div>
+                    <Separator className="bg-rose-100" />
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Base Price</span>
+                      <span>{guestNum > 0 ? formatPrice(basePrice) : '—'}</span>
+                    </div>
+                    {singersTotal > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Singers</span>
+                        <span>{formatPrice(singersTotal)}</span>
+                      </div>
+                    )}
+                    {carsTotal > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Cars</span>
+                        <span>{formatPrice(carsTotal)}</span>
+                      </div>
+                    )}
+                    {karnaySurnayTotal > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Karnay-Surnay</span>
+                        <span>{formatPrice(karnaySurnayTotal)}</span>
+                      </div>
+                    )}
+                    <Separator className="bg-rose-200" />
+                    <div className="flex justify-between font-bold">
+                      <span>Total</span>
+                      <span className="text-rose-600">{totalPrice > 0 ? formatPrice(totalPrice) : '—'}</span>
+                    </div>
+                    {totalPrice > 0 && (
+                      <div className="p-3 bg-gradient-to-r from-amber-50 to-rose-50 rounded-xl border border-amber-100">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Advance (20%)</span>
+                          <span className="font-bold text-amber-600">{formatPrice(advancePayment)}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">Due now to confirm booking</p>
+                      </div>
+                    )}
+                  </div>
 
-                    <div className="grid grid-cols-7 gap-1 mb-1">
-                      {DAY_NAMES.map((d) => (
-                        <div key={d} className="text-center text-xs font-medium text-muted-foreground py-1">{d}</div>
+                  {/* Progress dots */}
+                  <div className="mt-5 pt-4 border-t border-rose-100">
+                    <p className="text-xs text-muted-foreground mb-2">Booking Progress</p>
+                    <div className="flex items-center gap-1.5">
+                      {STEPS.map((_, index) => (
+                        <div
+                          key={index}
+                          className={`h-1.5 flex-1 rounded-full transition-all ${
+                            index < currentStep
+                              ? 'bg-gradient-to-r from-rose-500 to-pink-500'
+                              : 'bg-gray-200'
+                          }`}
+                        />
                       ))}
                     </div>
-
-                    <div className="grid grid-cols-7 gap-1">
-                      {calendarDays.map((day, idx) => {
-                        if (day === null) return <div key={`e-${idx}`} className="aspect-square" />
-                        const status = getDayStatus(day)
-                        const isSelected = bookingDate === `${calYear}-${String(calMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-                        return (
-                          <button
-                            key={day}
-                            onClick={() => status === 'available' && handleDateSelect(day)}
-                            disabled={status !== 'available'}
-                            className={`
-                              aspect-square rounded-lg text-sm font-medium flex items-center justify-center transition-all
-                              ${status === 'available' && !isSelected && 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 cursor-pointer border border-emerald-200'}
-                              ${status === 'available' && isSelected && 'bg-rose-500 text-white cursor-pointer border-2 border-rose-500 shadow-md shadow-rose-200'}
-                              ${status === 'booked' && 'bg-red-50 text-red-300 cursor-not-allowed border border-red-100 line-through'}
-                              ${status === 'past' && 'bg-gray-50 text-gray-300 cursor-not-allowed border border-gray-100'}
-                            `}
-                          >
-                            {day}
-                          </button>
-                        )
-                      })}
-                    </div>
-
-                    <div className="flex items-center gap-3 mt-4 text-xs">
-                      <div className="flex items-center gap-1">
-                        <div className="w-3 h-3 rounded bg-emerald-50 border border-emerald-200" />
-                        <span className="text-muted-foreground">Available</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <div className="w-3 h-3 rounded bg-rose-500 border-2 border-rose-500" />
-                        <span className="text-muted-foreground">Selected</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <div className="w-3 h-3 rounded bg-red-50 border border-red-100" />
-                        <span className="text-muted-foreground">Booked</span>
-                      </div>
-                    </div>
-
-                    {bookingDate && (
-                      <div className="mt-4 p-3 bg-rose-50 rounded-xl border border-rose-100 text-center">
-                        <p className="text-sm text-muted-foreground">Selected Date</p>
-                        <p className="font-semibold text-rose-600">
-                          {new Date(bookingDate + 'T00:00:00').toLocaleDateString('en-US', {
-                            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-                          })}
-                        </p>
-                      </div>
-                    )}
+                    <p className="text-xs text-muted-foreground mt-1.5">
+                      Step {currentStep} of 5
+                    </p>
                   </div>
                 </CardContent>
               </Card>
-            )}
-
-            {/* Step 2: Guest Count */}
-            {currentStep === 2 && (
-              <Card className="border-rose-100">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-1">Enter Guest Count</h3>
-                  <p className="text-muted-foreground text-sm mb-6">
-                    Hall capacity: {hall.capacity} guests
-                  </p>
-
-                  <div className="max-w-sm mx-auto space-y-6">
-                    <div>
-                      <Label htmlFor="guestCount" className="text-base font-medium mb-2 block">
-                        Number of Guests
-                      </Label>
-                      <div className="relative">
-                        <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-rose-400" />
-                        <Input
-                          id="guestCount"
-                          type="number"
-                          placeholder="Enter number of guests"
-                          value={guestCount}
-                          onChange={(e) => setGuestCount(e.target.value)}
-                          min={1}
-                          max={hall.capacity}
-                          className="pl-10 h-12 text-lg"
-                        />
-                      </div>
-                      {hall && parseInt(guestCount) > hall.capacity && (
-                        <p className="text-sm text-red-500 mt-1">
-                          Exceeds hall capacity of {hall.capacity} guests
-                        </p>
-                      )}
-                    </div>
-
-                    {guestNum > 0 && guestNum <= hall.capacity && (
-                      <Card className="bg-gradient-to-r from-rose-50 to-amber-50 border-rose-100">
-                        <CardContent className="p-4">
-                          <div className="space-y-2">
-                            <div className="flex justify-between text-sm">
-                              <span className="text-muted-foreground">Price per seat</span>
-                              <span>{formatPrice(hall.seatPrice)}</span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                              <span className="text-muted-foreground">Guest count</span>
-                              <span>× {guestNum}</span>
-                            </div>
-                            <Separator className="bg-rose-200" />
-                            <div className="flex justify-between font-semibold">
-                              <span>Base Price</span>
-                              <span className="text-rose-600">{formatPrice(basePrice)}</span>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Step 3: Select Services */}
-            {currentStep === 3 && (
-              <Card className="border-rose-100">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-1">Select Optional Services</h3>
-                  <p className="text-muted-foreground text-sm mb-6">
-                    Enhance your wedding with these additional services
-                  </p>
-
-                  <div className="space-y-6">
-                    {/* Karnay Surnay */}
-                    {hall.hasKarnaySurnay && (
-                      <div>
-                        <h4 className="font-semibold mb-3 flex items-center gap-2">
-                          <Music className="w-4 h-4 text-amber-500" />
-                          Karnay-Surnay
-                        </h4>
-                        <div
-                          className="flex items-center gap-3 p-3 rounded-xl border border-rose-100 cursor-pointer hover:bg-rose-50/50 transition-colors"
-                          onClick={() => setIncludeKarnaySurnay(!includeKarnaySurnay)}
-                        >
-                          <Checkbox
-                            checked={includeKarnaySurnay}
-                            onCheckedChange={() => setIncludeKarnaySurnay(!includeKarnaySurnay)}
-                          />
-                          <div className="flex-1">
-                            <p className="font-medium text-sm">Karnay-Surnay Service</p>
-                            <p className="text-xs text-rose-600 font-medium">{formatPrice(hall.karnaySurnayPrice || 0)}</p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Singers */}
-                    {hall.singers.length > 0 && (
-                      <div>
-                        <h4 className="font-semibold mb-3 flex items-center gap-2">
-                          <Music className="w-4 h-4 text-rose-500" />
-                          Singers
-                        </h4>
-                        <div className="space-y-2">
-                          {hall.singers.map((singer) => (
-                            <div
-                              key={singer.singerId}
-                              className="flex items-center gap-3 p-3 rounded-xl border border-rose-100 cursor-pointer hover:bg-rose-50/50 transition-colors"
-                              onClick={() => {
-                                setSelectedSingers((prev) =>
-                                  prev.includes(singer.singerId)
-                                    ? prev.filter((id) => id !== singer.singerId)
-                                    : [...prev, singer.singerId]
-                                )
-                              }}
-                            >
-                              <Checkbox
-                                checked={selectedSingers.includes(singer.singerId)}
-                                onCheckedChange={() => {
-                                  setSelectedSingers((prev) =>
-                                    prev.includes(singer.singerId)
-                                      ? prev.filter((id) => id !== singer.singerId)
-                                      : [...prev, singer.singerId]
-                                  )
-                                }}
-                              />
-                              <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-rose-100">
-                                {singer.imageUrl ? (
-                                  <img src={singer.imageUrl} alt={singer.singerName} className="w-full h-full object-cover" />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center">
-                                    <Music className="w-4 h-4 text-rose-400" />
-                                  </div>
-                                )}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium text-sm truncate">{singer.singerName}</p>
-                                <p className="text-xs text-rose-600 font-medium">{formatPrice(singer.price)}</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Menus */}
-                    {hall.menus.length > 0 && (
-                      <div>
-                        <h4 className="font-semibold mb-3 flex items-center gap-2">
-                          <Utensils className="w-4 h-4 text-amber-500" />
-                          Menus
-                        </h4>
-                        <div className="space-y-2">
-                          {hall.menus.map((menu) => (
-                            <div
-                              key={menu.menuId}
-                              className="flex items-center gap-3 p-3 rounded-xl border border-rose-100 cursor-pointer hover:bg-rose-50/50 transition-colors"
-                              onClick={() => {
-                                setSelectedMenus((prev) =>
-                                  prev.includes(menu.menuId)
-                                    ? prev.filter((id) => id !== menu.menuId)
-                                    : [...prev, menu.menuId]
-                                )
-                              }}
-                            >
-                              <Checkbox
-                                checked={selectedMenus.includes(menu.menuId)}
-                                onCheckedChange={() => {
-                                  setSelectedMenus((prev) =>
-                                    prev.includes(menu.menuId)
-                                      ? prev.filter((id) => id !== menu.menuId)
-                                      : [...prev, menu.menuId]
-                                  )
-                                }}
-                              />
-                              <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center shrink-0">
-                                <Utensils className="w-4 h-4 text-amber-500" />
-                              </div>
-                              <p className="font-medium text-sm">{menu.menuName}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Cars */}
-                    {hall.cars.length > 0 && (
-                      <div>
-                        <h4 className="font-semibold mb-3 flex items-center gap-2">
-                          <Car className="w-4 h-4 text-rose-500" />
-                          Cars
-                        </h4>
-                        <div className="space-y-2">
-                          {hall.cars.map((car) => (
-                            <div
-                              key={car.carId}
-                              className="flex items-center gap-3 p-3 rounded-xl border border-rose-100 cursor-pointer hover:bg-rose-50/50 transition-colors"
-                              onClick={() => {
-                                setSelectedCars((prev) =>
-                                  prev.includes(car.carId)
-                                    ? prev.filter((id) => id !== car.carId)
-                                    : [...prev, car.carId]
-                                )
-                              }}
-                            >
-                              <Checkbox
-                                checked={selectedCars.includes(car.carId)}
-                                onCheckedChange={() => {
-                                  setSelectedCars((prev) =>
-                                    prev.includes(car.carId)
-                                      ? prev.filter((id) => id !== car.carId)
-                                      : [...prev, car.carId]
-                                  )
-                                }}
-                              />
-                              <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-rose-100">
-                                {car.imageUrl ? (
-                                  <img src={car.imageUrl} alt={car.brand} className="w-full h-full object-cover" />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center">
-                                    <Car className="w-4 h-4 text-rose-400" />
-                                  </div>
-                                )}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium text-sm truncate">{car.brand}</p>
-                                <p className="text-xs text-rose-600 font-medium">{formatPrice(car.price)}</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Running Total */}
-                    <Card className="bg-gradient-to-r from-rose-50 to-amber-50 border-rose-100">
-                      <CardContent className="p-4">
-                        <h4 className="font-semibold mb-3">Price Summary</h4>
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Base Price ({guestNum} guests)</span>
-                            <span>{formatPrice(basePrice)}</span>
-                          </div>
-                          {singersTotal > 0 && (
-                            <div className="flex justify-between text-sm">
-                              <span className="text-muted-foreground">Singers</span>
-                              <span>{formatPrice(singersTotal)}</span>
-                            </div>
-                          )}
-                          {carsTotal > 0 && (
-                            <div className="flex justify-between text-sm">
-                              <span className="text-muted-foreground">Cars</span>
-                              <span>{formatPrice(carsTotal)}</span>
-                            </div>
-                          )}
-                          {karnaySurnayTotal > 0 && (
-                            <div className="flex justify-between text-sm">
-                              <span className="text-muted-foreground">Karnay-Surnay</span>
-                              <span>{formatPrice(karnaySurnayTotal)}</span>
-                            </div>
-                          )}
-                          <Separator className="bg-rose-200" />
-                          <div className="flex justify-between font-bold">
-                            <span>Total</span>
-                            <span className="text-rose-600">{formatPrice(totalPrice)}</span>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Advance (20%)</span>
-                            <span className="font-medium text-amber-600">{formatPrice(advancePayment)}</span>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Step 4: Personal Info */}
-            {currentStep === 4 && (
-              <Card className="border-rose-100">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-1">Enter Your Information</h3>
-                  <p className="text-muted-foreground text-sm mb-6">
-                    We need your contact details for the booking
-                  </p>
-
-                  <div className="max-w-md mx-auto space-y-4">
-                    <div>
-                      <Label htmlFor="firstName">First Name</Label>
-                      <Input
-                        id="firstName"
-                        placeholder="Enter your first name"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        className="mt-1.5"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="lastName">Last Name</Label>
-                      <Input
-                        id="lastName"
-                        placeholder="Enter your last name"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        className="mt-1.5"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="phone">Phone Number</Label>
-                      <Input
-                        id="phone"
-                        placeholder="+998 90 123 45 67"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="mt-1.5"
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Step 5: Review & Payment */}
-            {currentStep === 5 && (
-              <Card className="border-rose-100">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-1">Review & Payment</h3>
-                  <p className="text-muted-foreground text-sm mb-6">
-                    Please review your booking details before payment
-                  </p>
-
-                  <div className="space-y-4">
-                    {/* Booking Summary */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="p-3 rounded-xl bg-rose-50/50 border border-rose-100">
-                        <p className="text-xs text-muted-foreground mb-1">Wedding Hall</p>
-                        <p className="font-semibold">{hall.name}</p>
-                        <p className="text-sm text-muted-foreground">{hall.district}</p>
-                      </div>
-                      <div className="p-3 rounded-xl bg-rose-50/50 border border-rose-100">
-                        <p className="text-xs text-muted-foreground mb-1">Date</p>
-                        <p className="font-semibold">
-                          {new Date(bookingDate + 'T00:00:00').toLocaleDateString('en-US', {
-                            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-                          })}
-                        </p>
-                      </div>
-                      <div className="p-3 rounded-xl bg-rose-50/50 border border-rose-100">
-                        <p className="text-xs text-muted-foreground mb-1">Guest Count</p>
-                        <p className="font-semibold">{guestNum} guests</p>
-                      </div>
-                      <div className="p-3 rounded-xl bg-rose-50/50 border border-rose-100">
-                        <p className="text-xs text-muted-foreground mb-1">Contact</p>
-                        <p className="font-semibold">{firstName} {lastName}</p>
-                        <p className="text-sm text-muted-foreground">{phone}</p>
-                      </div>
-                    </div>
-
-                    {/* Services Summary */}
-                    {(selectedSingers.length > 0 || selectedMenus.length > 0 || selectedCars.length > 0 || includeKarnaySurnay) && (
-                      <div className="p-3 rounded-xl bg-amber-50/50 border border-amber-100">
-                        <p className="text-xs text-muted-foreground mb-2">Selected Services</p>
-                        <div className="flex flex-wrap gap-1.5">
-                          {includeKarnaySurnay && (
-                            <Badge className="bg-amber-100 text-amber-800 border-amber-200">
-                              <Music className="w-3 h-3 mr-1" />
-                              Karnay-Surnay — {formatPrice(karnaySurnayTotal)}
-                            </Badge>
-                          )}
-                          {selectedSingers.map((id) => {
-                            const singer = hall.singers.find((s) => s.singerId === id)
-                            return singer ? (
-                              <Badge key={id} className="bg-rose-100 text-rose-800 border-rose-200">
-                                <Music className="w-3 h-3 mr-1" />
-                                {singer.singerName} — {formatPrice(singer.price)}
-                              </Badge>
-                            ) : null
-                          })}
-                          {selectedMenus.map((id) => {
-                            const menu = hall.menus.find((m) => m.menuId === id)
-                            return menu ? (
-                              <Badge key={id} className="bg-amber-100 text-amber-800 border-amber-200">
-                                <Utensils className="w-3 h-3 mr-1" />
-                                {menu.menuName}
-                              </Badge>
-                            ) : null
-                          })}
-                          {selectedCars.map((id) => {
-                            const car = hall.cars.find((c) => c.carId === id)
-                            return car ? (
-                              <Badge key={id} className="bg-rose-100 text-rose-800 border-rose-200">
-                                <Car className="w-3 h-3 mr-1" />
-                                {car.brand} — {formatPrice(car.price)}
-                              </Badge>
-                            ) : null
-                          })}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Price Breakdown */}
-                    <Card className="bg-gradient-to-r from-rose-50 to-amber-50 border-rose-100">
-                      <CardContent className="p-4">
-                        <h4 className="font-semibold mb-3">Price Breakdown</h4>
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Base Price ({formatPrice(hall.seatPrice)} × {guestNum})</span>
-                            <span>{formatPrice(basePrice)}</span>
-                          </div>
-                          {singersTotal > 0 && (
-                            <div className="flex justify-between text-sm">
-                              <span className="text-muted-foreground">Singers</span>
-                              <span>{formatPrice(singersTotal)}</span>
-                            </div>
-                          )}
-                          {carsTotal > 0 && (
-                            <div className="flex justify-between text-sm">
-                              <span className="text-muted-foreground">Cars</span>
-                              <span>{formatPrice(carsTotal)}</span>
-                            </div>
-                          )}
-                          {karnaySurnayTotal > 0 && (
-                            <div className="flex justify-between text-sm">
-                              <span className="text-muted-foreground">Karnay-Surnay</span>
-                              <span>{formatPrice(karnaySurnayTotal)}</span>
-                            </div>
-                          )}
-                          <Separator className="bg-rose-200" />
-                          <div className="flex justify-between font-bold text-base">
-                            <span>Total Price</span>
-                            <span className="text-rose-600">{formatPrice(totalPrice)}</span>
-                          </div>
-                          <div className="flex justify-between font-semibold">
-                            <span>Advance Payment (20%)</span>
-                            <span className="text-amber-600">{formatPrice(advancePayment)}</span>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Navigation Buttons */}
-        <div className="flex items-center justify-between mt-6">
-          <Button
-            variant="outline"
-            onClick={currentStep === 1 ? () => navigateTo('hall-detail') : handleBack}
-            className="border-rose-200"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            {currentStep === 1 ? 'Back to Hall' : 'Previous'}
-          </Button>
-
-          {currentStep < 5 ? (
-            <Button
-              onClick={handleNext}
-              className="bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white"
-            >
-              Next Step
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          ) : (
-            <Button
-              onClick={handlePayment}
-              disabled={submitting}
-              className="bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white"
-            >
-              {submitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Pay Advance — {formatPrice(advancePayment)}
-                </>
-              )}
-            </Button>
-          )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -19,6 +19,7 @@ export type ViewType =
   | 'admin-halls'
   | 'admin-owners'
   | 'admin-bookings'
+  | 'favorites'
 
 interface User {
   userId: string

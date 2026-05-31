@@ -58,10 +58,10 @@ interface Booking {
 const formatPrice = (price: number) =>
   new Intl.NumberFormat('uz-UZ').format(price) + " so'm"
 
-const STATUS_CONFIG: Record<string, { color: string; bg: string; border: string; label: string; icon: React.ElementType }> = {
-  upcoming: { color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200', label: 'Kutilmoqda', icon: Clock },
-  completed: { color: 'text-gray-600', bg: 'bg-gray-50', border: 'border-gray-200', label: 'Tugallangan', icon: CheckCircle2 },
-  cancelled: { color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200', label: 'Bekor Qilingan', icon: X },
+const STATUS_CONFIG: Record<string, { color: string; bg: string; border: string; label: string; icon: React.ElementType; darkColor?: string; darkBg?: string; darkBorder?: string }> = {
+  upcoming: { color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200', label: 'Kutilmoqda', icon: Clock, darkColor: 'dark:text-emerald-300', darkBg: 'dark:bg-emerald-900/20', darkBorder: 'dark:border-emerald-800' },
+  completed: { color: 'text-gray-600', bg: 'bg-gray-50', border: 'border-gray-200', label: 'Tugallangan', icon: CheckCircle2, darkColor: 'dark:text-gray-300', darkBg: 'dark:bg-gray-800/20', darkBorder: 'dark:border-gray-700' },
+  cancelled: { color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200', label: 'Bekor Qilingan', icon: X, darkColor: 'dark:text-red-400', darkBg: 'dark:bg-red-900/20', darkBorder: 'dark:border-red-800' },
 }
 
 const SERVICE_ICONS: Record<string, React.ElementType> = {
@@ -79,9 +79,9 @@ const SERVICE_LABELS: Record<string, string> = {
 }
 
 const FILTER_CHIPS = [
-  { key: 'upcoming', label: 'Kutilmoqda', icon: Clock, color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  { key: 'completed', label: 'Tugallangan', icon: CheckCircle2, color: 'bg-gray-50 text-gray-700 border-gray-200' },
-  { key: 'cancelled', label: 'Bekor', icon: X, color: 'bg-red-50 text-red-700 border-red-200' },
+  { key: 'upcoming', label: 'Kutilmoqda', icon: Clock, color: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800' },
+  { key: 'completed', label: 'Tugallangan', icon: CheckCircle2, color: 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800/20 dark:text-gray-300 dark:border-gray-700' },
+  { key: 'cancelled', label: 'Bekor', icon: X, color: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800' },
 ]
 
 export default function MyBookingsPage() {
@@ -204,7 +204,7 @@ export default function MyBookingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50">
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 dark:from-background dark:via-background dark:to-background">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         {/* Header */}
         <motion.div
@@ -216,26 +216,26 @@ export default function MyBookingsPage() {
           <Button
             variant="ghost"
             onClick={() => navigateTo('landing')}
-            className="mb-2 text-rose-600 hover:text-rose-700 hover:bg-rose-50 p-0"
+            className="mb-2 text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-900/20 p-0"
           >
             <ChevronLeft className="w-4 h-4 mr-1" />
             Bosh sahifa
           </Button>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-foreground flex items-center gap-2">
                 <Sparkles className="w-7 h-7 text-rose-500" />
                 Mening Bronlarim
               </h1>
-              <p className="text-gray-500 mt-1">To&apos;yxona bronlaringizni boshqaring</p>
+              <p className="text-gray-500 dark:text-muted-foreground mt-1">To&apos;yxona bronlaringizni boshqaring</p>
             </div>
             {bookings.length > 0 && (
-              <div className="flex items-center gap-1 bg-white rounded-lg border border-rose-200 p-1">
+              <div className="flex items-center gap-1 bg-white dark:bg-card rounded-lg border border-rose-200 dark:border-rose-800 p-1">
                 <Button
                   variant={viewMode === 'card' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('card')}
-                  className={`h-8 w-8 p-0 ${viewMode === 'card' ? 'bg-rose-500 text-white' : 'text-gray-500'}`}
+                  className={`h-8 w-8 p-0 ${viewMode === 'card' ? 'bg-rose-500 text-white' : 'text-gray-500 dark:text-gray-400'}`}
                 >
                   <LayoutList className="w-4 h-4" />
                 </Button>
@@ -243,7 +243,7 @@ export default function MyBookingsPage() {
                   variant={viewMode === 'timeline' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('timeline')}
-                  className={`h-8 w-8 p-0 ${viewMode === 'timeline' ? 'bg-rose-500 text-white' : 'text-gray-500'}`}
+                  className={`h-8 w-8 p-0 ${viewMode === 'timeline' ? 'bg-rose-500 text-white' : 'text-gray-500 dark:text-gray-400'}`}
                 >
                   <AlignJustify className="w-4 h-4" />
                 </Button>
@@ -268,7 +268,7 @@ export default function MyBookingsPage() {
                 className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium border transition-all duration-200 ${
                   isActive
                     ? chip.color + ' shadow-sm'
-                    : 'bg-white text-gray-500 border-gray-200 hover:border-rose-200 hover:text-rose-600'
+                    : 'bg-white dark:bg-card text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-rose-200 dark:hover:border-rose-800 hover:text-rose-600 dark:hover:text-rose-400'
                 }`}
               >
                 <chip.icon className="w-3.5 h-3.5" />
@@ -282,7 +282,7 @@ export default function MyBookingsPage() {
         {loading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
-              <Card key={i} className="border-0 shadow-md bg-white">
+              <Card key={i} className="border-0 dark:border dark:border-rose-900/20 shadow-md bg-white dark:bg-card">
                 <CardContent className="p-4">
                   <div className="flex gap-4">
                     <Skeleton className="w-24 h-24 rounded-xl shrink-0" />
@@ -302,20 +302,20 @@ export default function MyBookingsPage() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
           >
-            <Card className="p-12 text-center border-dashed border-2 border-rose-200 bg-white/50 shadow-none">
+            <Card className="p-12 text-center border-dashed border-2 border-rose-200 dark:border-rose-800 bg-white/50 dark:bg-card/50 shadow-none">
               {(() => {
                 const config = emptyStateConfig[statusFilter] || emptyStateConfig.upcoming
                 return (
                   <>
-                    <div className="bg-rose-50 w-24 h-24 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <config.icon className="w-12 h-12 text-rose-300" />
+                    <div className="bg-rose-50 dark:bg-rose-900/20 w-24 h-24 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <config.icon className="w-12 h-12 text-rose-300 dark:text-rose-600" />
                     </div>
-                    <h3 className="text-xl font-bold text-gray-600 mb-2">{config.title}</h3>
-                    <p className="text-gray-400 mb-6 max-w-sm mx-auto">{config.desc}</p>
+                    <h3 className="text-xl font-bold text-gray-600 dark:text-foreground mb-2">{config.title}</h3>
+                    <p className="text-gray-400 dark:text-muted-foreground mb-6 max-w-sm mx-auto">{config.desc}</p>
                     {statusFilter === 'upcoming' && (
                       <Button
                         onClick={() => navigateTo('halls')}
-                        className="bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white shadow-lg shadow-rose-200/50"
+                        className="bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white shadow-lg shadow-rose-200/50 dark:shadow-rose-900/30"
                       >
                         <Building2 className="w-4 h-4 mr-2" />
                         To&apos;yxonalarni Ko&apos;rish
@@ -329,7 +329,7 @@ export default function MyBookingsPage() {
         ) : viewMode === 'timeline' ? (
           /* Timeline View */
           <div className="relative">
-            <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-rose-100" />
+            <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-rose-100 dark:bg-rose-900/30" />
             <div className="space-y-6">
               <AnimatePresence>
                 {bookings.map((booking, index) => {
@@ -347,43 +347,43 @@ export default function MyBookingsPage() {
                       className="relative pl-14"
                     >
                       {/* Timeline dot */}
-                      <div className={`absolute left-4 top-4 w-5 h-5 rounded-full border-2 border-white shadow-md ${booking.bookingStatus === 'upcoming' ? 'bg-emerald-500' : booking.bookingStatus === 'completed' ? 'bg-gray-400' : 'bg-red-500'}`} />
+                      <div className={`absolute left-4 top-4 w-5 h-5 rounded-full border-2 border-white dark:border-card shadow-md ${booking.bookingStatus === 'upcoming' ? 'bg-emerald-500' : booking.bookingStatus === 'completed' ? 'bg-gray-400 dark:bg-gray-500' : 'bg-red-500'}`} />
 
-                      <Card className="border-0 shadow-md bg-white hover:shadow-lg transition-shadow">
+                      <Card className="border-0 dark:border dark:border-rose-900/20 shadow-md bg-white dark:bg-card hover:shadow-lg transition-shadow">
                         <CardContent className="p-4">
                           <div className="flex items-start gap-4">
-                            <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-rose-100">
+                            <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-rose-100 dark:bg-rose-900/30">
                               {hallImage ? (
                                 <img src={hallImage} alt={booking.hall.name} className="w-full h-full object-cover" />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center">
-                                  <Building2 className="w-6 h-6 text-rose-300" />
+                                  <Building2 className="w-6 h-6 text-rose-300 dark:text-rose-600" />
                                 </div>
                               )}
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-start justify-between gap-2 mb-1">
-                                <h3 className="font-bold text-gray-900 truncate">{booking.hall.name}</h3>
-                                <Badge className={`shrink-0 border ${statusConfig.bg} ${statusConfig.color} ${statusConfig.border} text-xs`}>
+                                <h3 className="font-bold text-gray-900 dark:text-foreground truncate">{booking.hall.name}</h3>
+                                <Badge className={`shrink-0 border ${statusConfig.bg} ${statusConfig.color} ${statusConfig.border} ${statusConfig.darkBg || ''} ${statusConfig.darkColor || ''} ${statusConfig.darkBorder || ''} text-xs`}>
                                   <StatusIcon className="w-3 h-3 mr-1" />
                                   {statusConfig.label}
                                 </Badge>
                               </div>
-                              <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-1">
+                              <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 mb-1">
                                 <Calendar className="w-3.5 h-3.5 text-rose-400" />
                                 <span>{formatShortDate(booking.bookingDate)}</span>
-                                <span className="text-gray-300 mx-1">•</span>
+                                <span className="text-gray-300 dark:text-gray-600 mx-1">•</span>
                                 <Users className="w-3.5 h-3.5 text-rose-400" />
                                 <span>{booking.guestCount} kishi</span>
                               </div>
-                              <div className="flex items-center justify-between mt-2 pt-2 border-t border-rose-50">
-                                <span className="font-semibold text-rose-600 text-sm">{formatPrice(booking.totalPrice)}</span>
+                              <div className="flex items-center justify-between mt-2 pt-2 border-t border-rose-50 dark:border-rose-900/20">
+                                <span className="font-semibold text-rose-600 dark:text-rose-400 text-sm">{formatPrice(booking.totalPrice)}</span>
                                 <div className="flex gap-1.5">
                                   <Button
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleDownloadReceipt(booking)}
-                                    className="h-7 text-xs text-amber-600 hover:text-amber-700 hover:bg-amber-50 px-2"
+                                    className="h-7 text-xs text-amber-600 dark:text-amber-400 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-900/20 px-2"
                                   >
                                     <Download className="w-3 h-3 mr-1" />
                                     Chek
@@ -393,7 +393,7 @@ export default function MyBookingsPage() {
                                       variant="ghost"
                                       size="sm"
                                       onClick={() => setCancelDialogId(booking.bookingId)}
-                                      className="h-7 text-xs text-red-500 hover:text-red-600 hover:bg-red-50 px-2"
+                                      className="h-7 text-xs text-red-500 dark:text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 px-2"
                                     >
                                       <X className="w-3 h-3 mr-1" />
                                       Bekor
@@ -428,7 +428,7 @@ export default function MyBookingsPage() {
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
                   >
-                    <Card className="border-0 shadow-md bg-white hover:shadow-lg hover:shadow-rose-100/50 transition-all duration-300 overflow-hidden">
+                    <Card className="border-0 dark:border dark:border-rose-900/20 shadow-md bg-white dark:bg-card hover:shadow-lg hover:shadow-rose-100/50 dark:hover:shadow-rose-900/20 transition-all duration-300 overflow-hidden">
                       <CardContent className="p-0">
                         <div className="flex">
                           {/* Hall Image */}
@@ -440,26 +440,26 @@ export default function MyBookingsPage() {
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <div className="w-full h-full bg-gradient-to-br from-rose-100 to-pink-100 flex items-center justify-center min-h-[140px]">
-                                <Building2 className="w-8 h-8 text-rose-300" />
+                              <div className="w-full h-full bg-gradient-to-br from-rose-100 to-pink-100 dark:from-rose-900/30 dark:to-pink-900/30 flex items-center justify-center min-h-[140px]">
+                                <Building2 className="w-8 h-8 text-rose-300 dark:text-rose-600" />
                               </div>
                             )}
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/10" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/10 dark:to-card/10" />
                           </div>
 
                           {/* Booking Info */}
                           <div className="flex-1 min-w-0 p-4 sm:p-5">
                             <div className="flex items-start justify-between gap-2 mb-2">
-                              <h3 className="font-bold text-gray-900 text-base truncate">
+                              <h3 className="font-bold text-gray-900 dark:text-foreground text-base truncate">
                                 {booking.hall.name}
                               </h3>
-                              <Badge className={`shrink-0 border ${statusConfig.bg} ${statusConfig.color} ${statusConfig.border} text-xs`}>
+                              <Badge className={`shrink-0 border ${statusConfig.bg} ${statusConfig.color} ${statusConfig.border} ${statusConfig.darkBg || ''} ${statusConfig.darkColor || ''} ${statusConfig.darkBorder || ''} text-xs`}>
                                 <StatusIcon className="w-3 h-3 mr-1" />
                                 {statusConfig.label}
                               </Badge>
                             </div>
 
-                            <div className="space-y-1.5 text-sm text-gray-500">
+                            <div className="space-y-1.5 text-sm text-gray-500 dark:text-gray-400">
                               <div className="flex items-center gap-1.5">
                                 <Calendar className="w-3.5 h-3.5 text-rose-400 shrink-0" />
                                 <span>{formatDate(booking.bookingDate)}</span>
@@ -483,7 +483,7 @@ export default function MyBookingsPage() {
                                     <Badge
                                       key={service.bookingServiceId}
                                       variant="outline"
-                                      className="text-xs bg-rose-50/50 border-rose-100 text-rose-700 py-0"
+                                      className="text-xs bg-rose-50/50 dark:bg-rose-900/20 border-rose-100 dark:border-rose-800 text-rose-700 dark:text-rose-300 py-0"
                                     >
                                       <IconComp className="w-3 h-3 mr-0.5" />
                                       {SERVICE_LABELS[service.serviceType] || service.serviceType}
@@ -494,17 +494,17 @@ export default function MyBookingsPage() {
                             )}
 
                             {/* Price & Actions */}
-                            <div className="flex items-center justify-between mt-3 pt-3 border-t border-rose-50">
+                            <div className="flex items-center justify-between mt-3 pt-3 border-t border-rose-50 dark:border-rose-900/20">
                               <div className="space-y-0.5">
                                 <div className="text-sm">
-                                  <span className="text-gray-500">Jami: </span>
-                                  <span className="font-bold text-rose-600">
+                                  <span className="text-gray-500 dark:text-gray-400">Jami: </span>
+                                  <span className="font-bold text-rose-600 dark:text-rose-400">
                                     {formatPrice(booking.totalPrice)}
                                   </span>
                                 </div>
                                 <div className="text-xs">
-                                  <span className="text-gray-400">Oldindan: </span>
-                                  <span className="font-semibold text-amber-600">
+                                  <span className="text-gray-400 dark:text-gray-500">Oldindan: </span>
+                                  <span className="font-semibold text-amber-600 dark:text-amber-400">
                                     {formatPrice(booking.advancePayment)}
                                   </span>
                                 </div>
@@ -515,7 +515,7 @@ export default function MyBookingsPage() {
                                   variant="outline"
                                   size="sm"
                                   onClick={() => handleDownloadReceipt(booking)}
-                                  className="border-amber-200 text-amber-600 hover:bg-amber-50 hover:text-amber-700 h-8 text-xs"
+                                  className="border-amber-200 dark:border-amber-800 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:text-amber-700 h-8 text-xs"
                                 >
                                   <FileText className="w-3.5 h-3.5 mr-1" />
                                   Chek
@@ -525,7 +525,7 @@ export default function MyBookingsPage() {
                                     variant="outline"
                                     size="sm"
                                     onClick={() => setCancelDialogId(booking.bookingId)}
-                                    className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 h-8 text-xs"
+                                    className="border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-700 h-8 text-xs"
                                   >
                                     <X className="w-3.5 h-3.5 mr-1" />
                                     Bekor

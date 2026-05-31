@@ -46,7 +46,7 @@ function StarDisplay({ rating, count }: { rating: number; count: number }) {
             className={`w-3 h-3 ${
               i < Math.round(rating)
                 ? 'text-amber-400 fill-amber-400'
-                : 'text-gray-200 fill-gray-200'
+                : 'text-gray-200 fill-gray-200 dark:text-gray-700 dark:fill-gray-700'
             }`}
           />
         ))}
@@ -101,9 +101,9 @@ export default function FavoritesPage() {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white dark:from-background dark:to-background flex items-center justify-center">
         <Card className="p-12 text-center max-w-md mx-auto">
-          <Heart className="w-16 h-16 mx-auto text-rose-200 mb-4" />
+          <Heart className="w-16 h-16 mx-auto text-rose-200 dark:text-rose-700 mb-4" />
           <h3 className="text-lg font-semibold mb-2">Login Required</h3>
           <p className="text-muted-foreground mb-4">
             Please login to view your favorite halls
@@ -117,13 +117,13 @@ export default function FavoritesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white dark:from-background dark:to-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back button */}
         <Button
           variant="ghost"
           onClick={() => navigateTo('halls')}
-          className="mb-4 text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+          className="mb-4 text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-900/20"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Halls
@@ -171,9 +171,9 @@ export default function FavoritesPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Card className="p-12 text-center border-rose-100 max-w-md mx-auto">
-              <div className="w-20 h-20 rounded-full bg-rose-50 flex items-center justify-center mx-auto mb-4">
-                <Heart className="w-10 h-10 text-rose-200" />
+            <Card className="p-12 text-center border-rose-100 dark:border-rose-900/30 max-w-md mx-auto">
+              <div className="w-20 h-20 rounded-full bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center mx-auto mb-4">
+                <Heart className="w-10 h-10 text-rose-200 dark:text-rose-600" />
               </div>
               <h3 className="text-lg font-semibold mb-2">No Favorites Yet</h3>
               <p className="text-muted-foreground mb-6">
@@ -199,7 +199,7 @@ export default function FavoritesPage() {
                 layout
               >
                 <Card
-                  className="overflow-hidden cursor-pointer group hover:shadow-xl hover:shadow-rose-200/40 transition-all duration-300 border-rose-100 hover:scale-[1.02]"
+                  className="overflow-hidden cursor-pointer group hover:shadow-xl hover:shadow-rose-200/40 dark:hover:shadow-rose-900/20 transition-all duration-300 border-rose-100 dark:border-rose-900/30 hover:scale-[1.02]"
                   onClick={() => handleHallClick(fav.hall.hallId)}
                 >
                   <div className="relative h-48 overflow-hidden">
@@ -210,8 +210,8 @@ export default function FavoritesPage() {
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-rose-100 to-amber-100 flex items-center justify-center">
-                        <Building2 className="w-14 h-14 text-rose-300" />
+                      <div className="w-full h-full bg-gradient-to-br from-rose-100 to-amber-100 dark:from-rose-900/30 dark:to-amber-900/30 flex items-center justify-center">
+                        <Building2 className="w-14 h-14 text-rose-300 dark:text-rose-600" />
                       </div>
                     )}
                     {fav.hall.hasKarnaySurnay && (
@@ -226,18 +226,18 @@ export default function FavoritesPage() {
                         handleRemoveFavorite(fav.hall.hallId)
                       }}
                       disabled={removing === fav.hall.hallId}
-                      className="absolute top-3 right-3 h-8 w-8 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-md transition-all hover:scale-110"
+                      className="absolute top-3 right-3 h-8 w-8 rounded-full bg-white/90 dark:bg-card/90 hover:bg-white dark:hover:bg-card flex items-center justify-center shadow-md transition-all hover:scale-110"
                     >
                       {removing === fav.hall.hallId ? (
                         <Loader2 className="w-4 h-4 text-rose-500 animate-spin" />
                       ) : (
-                        <Trash2 className="w-4 h-4 text-rose-500 hover:text-rose-700" />
+                        <Trash2 className="w-4 h-4 text-rose-500 hover:text-rose-700 dark:hover:text-rose-300" />
                       )}
                     </button>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
                   </div>
                   <CardContent className="p-4">
-                    <h3 className="font-semibold text-base mb-1 group-hover:text-rose-600 transition-colors line-clamp-1">
+                    <h3 className="font-semibold text-base mb-1 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors line-clamp-1">
                       {fav.hall.name}
                     </h3>
                     <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
@@ -248,11 +248,11 @@ export default function FavoritesPage() {
                       <StarDisplay rating={fav.hall.averageRating} count={fav.hall.totalReviews || 0} />
                     )}
                     <div className="flex items-center justify-between mt-3">
-                      <Badge variant="secondary" className="bg-rose-50 text-rose-700 border-rose-100">
+                      <Badge variant="secondary" className="bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-300 border-rose-100 dark:border-rose-800">
                         <Users className="w-3 h-3 mr-1" />
                         {fav.hall.capacity}
                       </Badge>
-                      <span className="text-sm font-semibold text-rose-600">
+                      <span className="text-sm font-semibold text-rose-600 dark:text-rose-400">
                         {formatPrice(fav.hall.seatPrice)}/seat
                       </span>
                     </div>

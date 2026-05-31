@@ -101,7 +101,7 @@ export default function AdminOwnersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 dark:from-background dark:via-background dark:to-background p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -110,8 +110,8 @@ export default function AdminOwnersPage() {
           className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6"
         >
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Egalar Boshqaruvi</h1>
-            <p className="text-gray-500 mt-1">To&apos;yxona egalarini boshqarish</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-foreground">Egalar Boshqaruvi</h1>
+            <p className="text-gray-500 dark:text-muted-foreground mt-1">To&apos;yxona egalarini boshqarish</p>
           </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
@@ -221,7 +221,7 @@ export default function AdminOwnersPage() {
               placeholder="Ism yoki email bo'yicha qidirish..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="pl-10 border-rose-200 focus:border-rose-400 bg-white"
+              className="pl-10 border-rose-200 focus:border-rose-400 bg-white dark:bg-card"
             />
           </div>
         </motion.div>
@@ -232,7 +232,7 @@ export default function AdminOwnersPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
         >
-          <Card className="shadow-md border-0">
+          <Card className="shadow-md border-0 dark:border dark:border-rose-900/20">
             <CardContent className="p-0">
               {loading ? (
                 <div className="p-4 space-y-3">
@@ -247,31 +247,31 @@ export default function AdminOwnersPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-rose-100 bg-rose-50/50">
-                        <th className="text-left py-3 px-4 font-semibold text-gray-600">Ism</th>
-                        <th className="text-left py-3 px-4 font-semibold text-gray-600">Email</th>
-                        <th className="text-left py-3 px-4 font-semibold text-gray-600">Foydalanuvchi</th>
-                        <th className="text-left py-3 px-4 font-semibold text-gray-600">Telefon</th>
-                        <th className="text-left py-3 px-4 font-semibold text-gray-600">To&apos;yxonalar</th>
-                        <th className="text-left py-3 px-4 font-semibold text-gray-600">Amallar</th>
+                      <tr className="border-b border-rose-100 dark:border-rose-900/20 bg-rose-50/50 dark:bg-rose-900/10">
+                        <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-muted-foreground">Ism</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-muted-foreground">Email</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-muted-foreground">Foydalanuvchi</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-muted-foreground">Telefon</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-muted-foreground">To&apos;yxonalar</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-muted-foreground">Amallar</th>
                       </tr>
                     </thead>
                     <tbody>
                       {owners.map((owner) => (
-                        <tr key={owner.userId} className="border-b border-rose-50 hover:bg-rose-50/30 transition-colors">
+                        <tr key={owner.userId} className="border-b border-rose-50 dark:border-rose-900/20 hover:bg-rose-50/30 dark:hover:bg-rose-900/10 transition-colors">
                           <td className="py-3 px-4">
                             <div className="flex items-center gap-2">
                               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-rose-400 to-pink-500 text-white flex items-center justify-center text-xs font-bold">
                                 {owner.firstName.charAt(0)}{owner.lastName.charAt(0)}
                               </div>
-                              <span className="font-medium text-gray-900">
+                              <span className="font-medium text-gray-900 dark:text-foreground">
                                 {owner.firstName} {owner.lastName}
                               </span>
                             </div>
                           </td>
-                          <td className="py-3 px-4 text-gray-600">{owner.email}</td>
-                          <td className="py-3 px-4 text-gray-600">@{owner.username}</td>
-                          <td className="py-3 px-4 text-gray-600">{owner.phone}</td>
+                          <td className="py-3 px-4 text-gray-600 dark:text-muted-foreground">{owner.email}</td>
+                          <td className="py-3 px-4 text-gray-600 dark:text-muted-foreground">@{owner.username}</td>
+                          <td className="py-3 px-4 text-gray-600 dark:text-muted-foreground">{owner.phone}</td>
                           <td className="py-3 px-4">
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-xs font-medium">
                               <Building2 className="w-3 h-3" />
@@ -282,7 +282,7 @@ export default function AdminOwnersPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-rose-600 hover:bg-rose-50"
+                              className="text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/10"
                             >
                               <UserCheck className="w-4 h-4 mr-1" />
                               Ko&apos;rish
@@ -297,8 +297,8 @@ export default function AdminOwnersPage() {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-between p-4 border-t border-rose-100">
-                  <p className="text-sm text-gray-500">
+                <div className="flex items-center justify-between p-4 border-t border-rose-100 dark:border-rose-900/20">
+                  <p className="text-sm text-gray-500 dark:text-muted-foreground">
                     Sahifa {page} / {totalPages}
                   </p>
                   <div className="flex gap-2">

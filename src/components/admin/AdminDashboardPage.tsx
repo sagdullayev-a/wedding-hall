@@ -174,7 +174,7 @@ export default function AdminDashboardPage() {
 
   if (loading || !data) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 p-4 md:p-6">
+      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 dark:from-background dark:via-background dark:to-background p-4 md:p-6">
         <div className="max-w-7xl mx-auto">
           <Skeleton className="h-10 w-64 mb-6" />
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
@@ -212,7 +212,7 @@ export default function AdminDashboardPage() {
   const approvalRate = data.totalHalls > 0 ? Math.round((data.approvedHalls / data.totalHalls) * 100) : 0
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 dark:from-background dark:via-background dark:to-background p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -221,11 +221,11 @@ export default function AdminDashboardPage() {
           className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6"
         >
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-foreground flex items-center gap-2">
               <Activity className="w-7 h-7 text-rose-500" />
               Admin Dashboard
             </h1>
-            <p className="text-gray-500 mt-1">Tizimning umumiy ko&apos;rinishi</p>
+            <p className="text-gray-500 dark:text-muted-foreground mt-1">Tizimning umumiy ko&apos;rinishi</p>
           </div>
           <Button
             onClick={handleSeed}
@@ -255,7 +255,7 @@ export default function AdminDashboardPage() {
           transition={{ delay: 0.35 }}
           className="mb-6"
         >
-          <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-foreground mb-3 flex items-center gap-2">
             <Shield className="w-5 h-5 text-rose-500" />
             Tezkor Amallar
           </h2>
@@ -268,7 +268,7 @@ export default function AdminDashboardPage() {
                 transition={{ delay: 0.4 + index * 0.05 }}
               >
                 <Card
-                  className="cursor-pointer hover:shadow-lg transition-all duration-300 border-0 bg-white group overflow-hidden"
+                  className="cursor-pointer hover:shadow-lg transition-all duration-300 border-0 bg-white dark:bg-card dark:border dark:border-rose-900/20 group overflow-hidden"
                   onClick={() => navigateTo(action.view)}
                 >
                   <CardContent className="p-4 flex items-center gap-3">
@@ -276,8 +276,8 @@ export default function AdminDashboardPage() {
                       <action.icon className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900 text-sm group-hover:text-rose-600 transition-colors">{action.title}</p>
-                      <p className="text-xs text-gray-500">{action.desc}</p>
+                      <p className="font-semibold text-gray-900 dark:text-foreground text-sm group-hover:text-rose-600 transition-colors">{action.title}</p>
+                      <p className="text-xs text-gray-500 dark:text-muted-foreground">{action.desc}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -293,7 +293,7 @@ export default function AdminDashboardPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            <Card className="shadow-md border-0 bg-white">
+            <Card className="shadow-md border-0 bg-white dark:bg-card dark:border dark:border-rose-900/20">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg flex items-center gap-2">
                   <BarChart3 className="w-5 h-5 text-rose-500" />
@@ -334,7 +334,7 @@ export default function AdminDashboardPage() {
                     </AreaChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="h-[300px] flex items-center justify-center text-gray-400">
+                  <div className="h-[300px] flex items-center justify-center text-gray-400 dark:text-muted-foreground">
                     <div className="text-center">
                       <BarChart3 className="w-12 h-12 mx-auto mb-2 opacity-30" />
                       <p>Ma&apos;lumot yo&apos;q</p>
@@ -350,7 +350,7 @@ export default function AdminDashboardPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.55 }}
           >
-            <Card className="shadow-md border-0 bg-white">
+            <Card className="shadow-md border-0 bg-white dark:bg-card dark:border dark:border-rose-900/20">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Eye className="w-5 h-5 text-rose-500" />
@@ -388,7 +388,7 @@ export default function AdminDashboardPage() {
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="h-[300px] flex items-center justify-center text-gray-400">
+                  <div className="h-[300px] flex items-center justify-center text-gray-400 dark:text-muted-foreground">
                     <div className="text-center">
                       <Building2 className="w-12 h-12 mx-auto mb-2 opacity-30" />
                       <p>Ma&apos;lumot yo&apos;q</p>
@@ -407,16 +407,16 @@ export default function AdminDashboardPage() {
           transition={{ delay: 0.6 }}
           className="mb-6"
         >
-          <Card className="shadow-md border-0 bg-white">
+          <Card className="shadow-md border-0 bg-white dark:bg-card dark:border dark:border-rose-900/20">
             <CardContent className="p-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h3 className="font-semibold text-gray-900">Tasdiqlash Ko&apos;rsatkichi</h3>
-                  <p className="text-sm text-gray-500">{data.approvedHalls} / {data.totalHalls} to&apos;yxonalar tasdiqlangan</p>
+                  <h3 className="font-semibold text-gray-900 dark:text-foreground">Tasdiqlash Ko&apos;rsatkichi</h3>
+                  <p className="text-sm text-gray-500 dark:text-muted-foreground">{data.approvedHalls} / {data.totalHalls} to&apos;yxonalar tasdiqlangan</p>
                 </div>
                 <div className="flex-1 max-w-xs">
                   <div className="flex items-center justify-between text-sm mb-1">
-                    <span className="text-gray-600">Tasdiqlangan</span>
+                    <span className="text-gray-600 dark:text-muted-foreground">Tasdiqlangan</span>
                     <span className="font-semibold text-rose-600">{approvalRate}%</span>
                   </div>
                   <Progress value={approvalRate} className="h-2.5 bg-rose-100 [&>[data-slot=indicator]]:bg-gradient-to-r [&>[data-slot=indicator]]:from-rose-500 [&>[data-slot=indicator]]:to-pink-500" />
@@ -432,7 +432,7 @@ export default function AdminDashboardPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.65 }}
         >
-          <Card className="shadow-md border-0 bg-white">
+          <Card className="shadow-md border-0 bg-white dark:bg-card dark:border dark:border-rose-900/20">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <CalendarDays className="w-5 h-5 text-rose-500" />
@@ -445,13 +445,13 @@ export default function AdminDashboardPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-rose-100">
-                          <th className="text-left py-3 px-3 font-semibold text-gray-600">To&apos;yxona</th>
-                          <th className="text-left py-3 px-3 font-semibold text-gray-600">Mijoz</th>
-                          <th className="text-left py-3 px-3 font-semibold text-gray-600">Sana</th>
-                          <th className="text-left py-3 px-3 font-semibold text-gray-600">Mehmonlar</th>
-                          <th className="text-left py-3 px-3 font-semibold text-gray-600">Narx</th>
-                          <th className="text-left py-3 px-3 font-semibold text-gray-600">Holat</th>
+                        <tr className="border-b border-rose-100 dark:border-rose-900/20">
+                          <th className="text-left py-3 px-3 font-semibold text-gray-600 dark:text-muted-foreground">To&apos;yxona</th>
+                          <th className="text-left py-3 px-3 font-semibold text-gray-600 dark:text-muted-foreground">Mijoz</th>
+                          <th className="text-left py-3 px-3 font-semibold text-gray-600 dark:text-muted-foreground">Sana</th>
+                          <th className="text-left py-3 px-3 font-semibold text-gray-600 dark:text-muted-foreground">Mehmonlar</th>
+                          <th className="text-left py-3 px-3 font-semibold text-gray-600 dark:text-muted-foreground">Narx</th>
+                          <th className="text-left py-3 px-3 font-semibold text-gray-600 dark:text-muted-foreground">Holat</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -463,17 +463,17 @@ export default function AdminDashboardPage() {
                               initial={{ opacity: 0, x: -10 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: index * 0.04 }}
-                              className="border-b border-rose-50 hover:bg-rose-50/50 transition-colors"
+                              className="border-b border-rose-50 dark:border-rose-900/10 hover:bg-rose-50/50 dark:hover:bg-rose-900/10 transition-colors"
                             >
-                              <td className="py-3 px-3 font-medium text-gray-900">
+                              <td className="py-3 px-3 font-medium text-gray-900 dark:text-foreground">
                                 {booking.hall?.name || 'N/A'}
                               </td>
-                              <td className="py-3 px-3 text-gray-600">
+                              <td className="py-3 px-3 text-gray-600 dark:text-muted-foreground">
                                 {booking.customer ? `${booking.customer.firstName} ${booking.customer.lastName}` : 'N/A'}
                               </td>
-                              <td className="py-3 px-3 text-gray-600">{formatDate(booking.bookingDate)}</td>
-                              <td className="py-3 px-3 text-gray-600">{booking.guestCount}</td>
-                              <td className="py-3 px-3 text-gray-900 font-medium">{formatPrice(booking.totalPrice)}</td>
+                              <td className="py-3 px-3 text-gray-600 dark:text-muted-foreground">{formatDate(booking.bookingDate)}</td>
+                              <td className="py-3 px-3 text-gray-600 dark:text-muted-foreground">{booking.guestCount}</td>
+                              <td className="py-3 px-3 text-gray-900 dark:text-foreground font-medium">{formatPrice(booking.totalPrice)}</td>
                               <td className="py-3 px-3">
                                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${st.className}`}>
                                   <span className={`w-1.5 h-1.5 rounded-full ${st.dot}`} />
@@ -487,11 +487,11 @@ export default function AdminDashboardPage() {
                     </table>
                   </div>
                 ) : (
-                  <div className="text-center py-12 text-gray-400">
-                    <div className="bg-rose-50 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <CalendarDays className="w-10 h-10 text-rose-300" />
+                  <div className="text-center py-12 text-gray-400 dark:text-muted-foreground">
+                    <div className="bg-rose-50 dark:bg-rose-900/20 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <CalendarDays className="w-10 h-10 text-rose-300 dark:text-rose-600" />
                     </div>
-                    <p className="font-medium text-gray-500">Hali bronlar yo&apos;q</p>
+                    <p className="font-medium text-gray-500 dark:text-muted-foreground">Hali bronlar yo&apos;q</p>
                     <p className="text-sm mt-1">Yangi bronlar qo&apos;shilganda bu yerda ko&apos;rinadi</p>
                   </div>
                 )}

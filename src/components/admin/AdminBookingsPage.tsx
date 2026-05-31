@@ -108,7 +108,7 @@ export default function AdminBookingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 dark:from-background dark:via-background dark:to-background p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -116,8 +116,8 @@ export default function AdminBookingsPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Bronlar Boshqaruvi</h1>
-          <p className="text-gray-500 mt-1">Barcha bronlarni ko&apos;rish va boshqarish</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-foreground">Bronlar Boshqaruvi</h1>
+          <p className="text-gray-500 dark:text-muted-foreground mt-1">Barcha bronlarni ko&apos;rish va boshqarish</p>
         </motion.div>
 
         {/* Filters */}
@@ -133,11 +133,11 @@ export default function AdminBookingsPage() {
               placeholder="To'yxona ID bo'yicha qidirish..."
               value={hallSearch}
               onChange={e => setHallSearch(e.target.value)}
-              className="pl-10 border-rose-200 focus:border-rose-400 bg-white"
+              className="pl-10 border-rose-200 focus:border-rose-400 bg-white dark:bg-card"
             />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-48 border-rose-200 bg-white">
+            <SelectTrigger className="w-full sm:w-48 border-rose-200 bg-white dark:bg-card">
               <SelectValue placeholder="Holat" />
             </SelectTrigger>
             <SelectContent>
@@ -155,7 +155,7 @@ export default function AdminBookingsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
         >
-          <Card className="shadow-md border-0">
+          <Card className="shadow-md border-0 dark:border dark:border-rose-900/20">
             <CardContent className="p-0">
               {loading ? (
                 <div className="p-4 space-y-3">
@@ -170,34 +170,34 @@ export default function AdminBookingsPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-rose-100 bg-rose-50/50">
-                        <th className="text-left py-3 px-4 font-semibold text-gray-600">To&apos;yxona</th>
-                        <th className="text-left py-3 px-4 font-semibold text-gray-600">Mijoz</th>
-                        <th className="text-left py-3 px-4 font-semibold text-gray-600">Sana</th>
-                        <th className="text-left py-3 px-4 font-semibold text-gray-600">Mehmonlar</th>
-                        <th className="text-left py-3 px-4 font-semibold text-gray-600">Jami Narx</th>
-                        <th className="text-left py-3 px-4 font-semibold text-gray-600">Oldindan</th>
-                        <th className="text-left py-3 px-4 font-semibold text-gray-600">Holat</th>
-                        <th className="text-left py-3 px-4 font-semibold text-gray-600">Amallar</th>
+                      <tr className="border-b border-rose-100 dark:border-rose-900/20 bg-rose-50/50 dark:bg-rose-900/10">
+                        <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-muted-foreground">To&apos;yxona</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-muted-foreground">Mijoz</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-muted-foreground">Sana</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-muted-foreground">Mehmonlar</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-muted-foreground">Jami Narx</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-muted-foreground">Oldindan</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-muted-foreground">Holat</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-600 dark:text-muted-foreground">Amallar</th>
                       </tr>
                     </thead>
                     <tbody>
                       {bookings.map((booking) => {
                         const status = statusConfig[booking.bookingStatus] || statusConfig.upcoming
                         return (
-                          <tr key={booking.bookingId} className="border-b border-rose-50 hover:bg-rose-50/30 transition-colors">
-                            <td className="py-3 px-4 font-medium text-gray-900">
+                          <tr key={booking.bookingId} className="border-b border-rose-50 dark:border-rose-900/20 hover:bg-rose-50/30 dark:hover:bg-rose-900/10 transition-colors">
+                            <td className="py-3 px-4 font-medium text-gray-900 dark:text-foreground">
                               {booking.hall?.name || 'N/A'}
                             </td>
-                            <td className="py-3 px-4 text-gray-600">
+                            <td className="py-3 px-4 text-gray-600 dark:text-muted-foreground">
                               {booking.customer
                                 ? `${booking.customer.firstName} ${booking.customer.lastName}`
                                 : 'N/A'}
                             </td>
-                            <td className="py-3 px-4 text-gray-600">{formatDate(booking.bookingDate)}</td>
-                            <td className="py-3 px-4 text-gray-600">{booking.guestCount}</td>
-                            <td className="py-3 px-4 text-gray-600">{formatPrice(booking.totalPrice)}</td>
-                            <td className="py-3 px-4 text-gray-600">{formatPrice(booking.advancePayment)}</td>
+                            <td className="py-3 px-4 text-gray-600 dark:text-muted-foreground">{formatDate(booking.bookingDate)}</td>
+                            <td className="py-3 px-4 text-gray-600 dark:text-muted-foreground">{booking.guestCount}</td>
+                            <td className="py-3 px-4 text-gray-600 dark:text-muted-foreground">{formatPrice(booking.totalPrice)}</td>
+                            <td className="py-3 px-4 text-gray-600 dark:text-muted-foreground">{formatPrice(booking.advancePayment)}</td>
                             <td className="py-3 px-4">
                               <Badge className={status.className}>{status.label}</Badge>
                             </td>
@@ -208,7 +208,7 @@ export default function AdminBookingsPage() {
                                     <Button
                                       variant="outline"
                                       size="sm"
-                                      className="text-red-600 border-red-200 hover:bg-red-50 h-8"
+                                      className="text-red-600 border-red-200 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-900/10 h-8"
                                       disabled={cancellingId === booking.bookingId}
                                     >
                                       <XCircle className="w-3.5 h-3.5 mr-1" />
@@ -245,8 +245,8 @@ export default function AdminBookingsPage() {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-between p-4 border-t border-rose-100">
-                  <p className="text-sm text-gray-500">
+                <div className="flex items-center justify-between p-4 border-t border-rose-100 dark:border-rose-900/20">
+                  <p className="text-sm text-gray-500 dark:text-muted-foreground">
                     Sahifa {page} / {totalPages}
                   </p>
                   <div className="flex gap-2">

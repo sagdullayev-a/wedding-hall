@@ -356,7 +356,7 @@ export default function OwnerHallFormPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 p-4 md:p-6">
+      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 dark:from-background dark:via-background dark:to-background p-4 md:p-6">
         <div className="max-w-5xl mx-auto">
           <Skeleton className="h-10 w-64 mb-6" />
           <Skeleton className="h-96" />
@@ -368,7 +368,7 @@ export default function OwnerHallFormPage() {
   const currentTabIndex = TAB_KEYS.indexOf(activeTab)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 dark:from-background dark:via-background dark:to-background p-4 md:p-6">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <motion.div
@@ -386,10 +386,10 @@ export default function OwnerHallFormPage() {
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-foreground">
                 {isEditing ? 'To\'yxonani Tahrirlash' : 'Yangi To\'yxona'}
               </h1>
-              <p className="text-gray-500 text-sm">
+              <p className="text-gray-500 dark:text-muted-foreground text-sm">
                 {isEditing ? 'To\'yxona ma\'lumotlarini yangilang' : 'Yangi to\'yxona ma\'lumotlarini kiriting'}
               </p>
             </div>
@@ -410,7 +410,7 @@ export default function OwnerHallFormPage() {
               variant="outline"
               size="sm"
               onClick={() => setShowPreview(!showPreview)}
-              className="border-rose-200 text-rose-600 hover:bg-rose-50"
+              className="border-rose-200 dark:border-rose-800 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/10"
             >
               <Eye className="w-4 h-4 mr-1.5" />
               <span className="hidden sm:inline">Ko&apos;rish</span>
@@ -425,7 +425,7 @@ export default function OwnerHallFormPage() {
           className="mb-5"
         >
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs text-gray-500">Shakl bajarilishi</span>
+            <span className="text-xs text-gray-500 dark:text-muted-foreground">Shakl bajarilishi</span>
             <span className="text-xs font-semibold text-rose-600">{formProgress}%</span>
           </div>
           <Progress value={formProgress} className="h-2 bg-rose-100 [&>[data-slot=indicator]]:bg-gradient-to-r [&>[data-slot=indicator]]:from-rose-500 [&>[data-slot=indicator]]:to-pink-500" />
@@ -461,7 +461,7 @@ export default function OwnerHallFormPage() {
                             ? 'bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-md shadow-rose-200/50'
                             : isCompleted
                               ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                              : 'bg-white text-gray-500 border border-gray-200 hover:border-rose-300 hover:text-rose-600'
+                              : 'bg-white dark:bg-card text-gray-500 dark:text-muted-foreground border border-gray-200 dark:border-gray-700 hover:border-rose-300 hover:text-rose-600'
                         }`}
                       >
                         {isCompleted && !isActive ? (
@@ -489,7 +489,7 @@ export default function OwnerHallFormPage() {
 
               {/* Basic Info Tab */}
               <TabsContent value="basic">
-                <Card className="shadow-md border-0 bg-white">
+                <Card className="shadow-md border-0 dark:border dark:border-rose-900/20 bg-white dark:bg-card">
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                       <Building2 className="w-5 h-5 text-rose-500" />
@@ -614,7 +614,7 @@ export default function OwnerHallFormPage() {
                     <div className="flex items-center justify-between p-4 bg-amber-50 rounded-lg border border-amber-200">
                       <div>
                         <Label className="text-base font-medium">Karnay-Surnay</Label>
-                        <p className="text-sm text-gray-500">Karnay-surnay xizmati mavjudligi</p>
+                        <p className="text-sm text-gray-500 dark:text-muted-foreground">Karnay-surnay xizmati mavjudligi</p>
                       </div>
                       <Switch
                         checked={hasKarnaySurnay}
@@ -661,7 +661,7 @@ export default function OwnerHallFormPage() {
 
               {/* Images Tab */}
               <TabsContent value="images">
-                <Card className="shadow-md border-0 bg-white">
+                <Card className="shadow-md border-0 dark:border dark:border-rose-900/20 bg-white dark:bg-card">
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                       <ImageIcon className="w-5 h-5 text-rose-500" />
@@ -697,10 +697,10 @@ export default function OwnerHallFormPage() {
                     )}
                     {images.length === 0 ? (
                       <div className="text-center py-12 text-gray-400">
-                        <div className="bg-rose-50 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <div className="bg-rose-50 dark:bg-rose-900/20 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                           <ImageIcon className="w-10 h-10 text-rose-300" />
                         </div>
-                        <p className="font-medium text-gray-500">Hali rasmlar yo&apos;q</p>
+                        <p className="font-medium text-gray-500 dark:text-muted-foreground">Hali rasmlar yo&apos;q</p>
                         <p className="text-sm mt-1">To&apos;yxona rasmlarini qo&apos;shing</p>
                       </div>
                     ) : (
@@ -715,7 +715,7 @@ export default function OwnerHallFormPage() {
                               key={img.imageId}
                               initial={{ opacity: 0, scale: 0.9 }}
                               animate={{ opacity: 1, scale: 1 }}
-                              className="relative group rounded-xl overflow-hidden border border-rose-100 shadow-sm"
+                              className="relative group rounded-xl overflow-hidden border border-rose-100 dark:border-rose-900/20 shadow-sm"
                             >
                               <img
                                 src={img.imageUrl}
@@ -746,7 +746,7 @@ export default function OwnerHallFormPage() {
 
               {/* Singers Tab */}
               <TabsContent value="singers">
-                <Card className="shadow-md border-0 bg-white">
+                <Card className="shadow-md border-0 dark:border dark:border-rose-900/20 bg-white dark:bg-card">
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                       <Mic className="w-5 h-5 text-rose-500" />
@@ -797,10 +797,10 @@ export default function OwnerHallFormPage() {
                     )}
                     {singers.length === 0 ? (
                       <div className="text-center py-12 text-gray-400">
-                        <div className="bg-rose-50 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <div className="bg-rose-50 dark:bg-rose-900/20 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                           <Mic className="w-10 h-10 text-rose-300" />
                         </div>
-                        <p className="font-medium text-gray-500">Hali xonandalar yo&apos;q</p>
+                        <p className="font-medium text-gray-500 dark:text-muted-foreground">Hali xonandalar yo&apos;q</p>
                       </div>
                     ) : (
                       <div className="space-y-2">
@@ -809,18 +809,18 @@ export default function OwnerHallFormPage() {
                             key={singer.singerId}
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="flex items-center justify-between p-3 bg-gradient-to-r from-white to-rose-50/30 rounded-lg border border-rose-100 hover:shadow-sm transition-shadow"
+                            className="flex items-center justify-between p-3 bg-gradient-to-r from-white to-rose-50/30 dark:from-card dark:to-rose-900/10 rounded-lg border border-rose-100 dark:border-rose-900/20 hover:shadow-sm transition-shadow"
                           >
                             <div className="flex items-center gap-3">
                               {singer.imageUrl ? (
-                                <img src={singer.imageUrl} alt={singer.singerName} className="w-10 h-10 rounded-full object-cover ring-2 ring-rose-100" />
+                                <img src={singer.imageUrl} alt={singer.singerName} className="w-10 h-10 rounded-full object-cover ring-2 ring-rose-100 dark:ring-rose-900/20" />
                               ) : (
-                                <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center">
+                                <div className="w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-900/20 flex items-center justify-center">
                                   <Mic className="w-5 h-5 text-rose-400" />
                                 </div>
                               )}
                               <div>
-                                <p className="font-medium text-gray-900">{singer.singerName}</p>
+                                <p className="font-medium text-gray-900 dark:text-foreground">{singer.singerName}</p>
                                 <p className="text-sm text-rose-600 font-medium">{formatPrice(singer.price)}</p>
                               </div>
                             </div>
@@ -844,7 +844,7 @@ export default function OwnerHallFormPage() {
 
               {/* Menus Tab */}
               <TabsContent value="menus">
-                <Card className="shadow-md border-0 bg-white">
+                <Card className="shadow-md border-0 dark:border dark:border-rose-900/20 bg-white dark:bg-card">
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                       <UtensilsCrossed className="w-5 h-5 text-rose-500" />
@@ -880,10 +880,10 @@ export default function OwnerHallFormPage() {
                     )}
                     {menus.length === 0 ? (
                       <div className="text-center py-12 text-gray-400">
-                        <div className="bg-rose-50 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <div className="bg-rose-50 dark:bg-rose-900/20 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                           <UtensilsCrossed className="w-10 h-10 text-rose-300" />
                         </div>
-                        <p className="font-medium text-gray-500">Hali menyular yo&apos;q</p>
+                        <p className="font-medium text-gray-500 dark:text-muted-foreground">Hali menyular yo&apos;q</p>
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -892,13 +892,13 @@ export default function OwnerHallFormPage() {
                             key={menu.menuId}
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="flex items-center justify-between p-3 bg-gradient-to-r from-white to-rose-50/30 rounded-lg border border-rose-100 hover:shadow-sm transition-shadow"
+                            className="flex items-center justify-between p-3 bg-gradient-to-r from-white to-rose-50/30 dark:from-card dark:to-rose-900/10 rounded-lg border border-rose-100 dark:border-rose-900/20 hover:shadow-sm transition-shadow"
                           >
                             <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-lg bg-rose-50 flex items-center justify-center">
+                              <div className="w-10 h-10 rounded-lg bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center">
                                 <UtensilsCrossed className="w-5 h-5 text-rose-400" />
                               </div>
-                              <p className="font-medium text-gray-900">{menu.menuName}</p>
+                              <p className="font-medium text-gray-900 dark:text-foreground">{menu.menuName}</p>
                             </div>
                             {isEditing && (
                               <Button
@@ -920,7 +920,7 @@ export default function OwnerHallFormPage() {
 
               {/* Cars Tab */}
               <TabsContent value="cars">
-                <Card className="shadow-md border-0 bg-white">
+                <Card className="shadow-md border-0 dark:border dark:border-rose-900/20 bg-white dark:bg-card">
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                       <Car className="w-5 h-5 text-rose-500" />
@@ -971,10 +971,10 @@ export default function OwnerHallFormPage() {
                     )}
                     {cars.length === 0 ? (
                       <div className="text-center py-12 text-gray-400">
-                        <div className="bg-rose-50 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <div className="bg-rose-50 dark:bg-rose-900/20 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                           <Car className="w-10 h-10 text-rose-300" />
                         </div>
-                        <p className="font-medium text-gray-500">Hali mashinalar yo&apos;q</p>
+                        <p className="font-medium text-gray-500 dark:text-muted-foreground">Hali mashinalar yo&apos;q</p>
                       </div>
                     ) : (
                       <div className="space-y-2">
@@ -983,18 +983,18 @@ export default function OwnerHallFormPage() {
                             key={car.carId}
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="flex items-center justify-between p-3 bg-gradient-to-r from-white to-rose-50/30 rounded-lg border border-rose-100 hover:shadow-sm transition-shadow"
+                            className="flex items-center justify-between p-3 bg-gradient-to-r from-white to-rose-50/30 dark:from-card dark:to-rose-900/10 rounded-lg border border-rose-100 dark:border-rose-900/20 hover:shadow-sm transition-shadow"
                           >
                             <div className="flex items-center gap-3">
                               {car.imageUrl ? (
-                                <img src={car.imageUrl} alt={car.brand} className="w-10 h-10 rounded-lg object-cover ring-2 ring-rose-100" />
+                                <img src={car.imageUrl} alt={car.brand} className="w-10 h-10 rounded-lg object-cover ring-2 ring-rose-100 dark:ring-rose-900/20" />
                               ) : (
-                                <div className="w-10 h-10 rounded-lg bg-rose-50 flex items-center justify-center">
+                                <div className="w-10 h-10 rounded-lg bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center">
                                   <Car className="w-5 h-5 text-rose-400" />
                                 </div>
                               )}
                               <div>
-                                <p className="font-medium text-gray-900">{car.brand}</p>
+                                <p className="font-medium text-gray-900 dark:text-foreground">{car.brand}</p>
                                 <p className="text-sm text-rose-600 font-medium">{formatPrice(car.price)}</p>
                               </div>
                             </div>
@@ -1027,15 +1027,15 @@ export default function OwnerHallFormPage() {
                 exit={{ opacity: 0, x: 20 }}
                 className="lg:col-span-1"
               >
-                <Card className="shadow-md border-0 bg-white sticky top-6">
+                <Card className="shadow-md border-0 dark:border dark:border-rose-900/20 bg-white dark:bg-card sticky top-6">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-semibold text-gray-500 flex items-center gap-1.5">
+                    <CardTitle className="text-sm font-semibold text-gray-500 dark:text-muted-foreground flex items-center gap-1.5">
                       <Eye className="w-4 h-4 text-rose-500" />
                       Jonli Ko&apos;rish
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <Card className="overflow-hidden border border-rose-100 shadow-sm">
+                    <Card className="overflow-hidden border border-rose-100 dark:border-rose-900/20 shadow-sm">
                       <div className="relative h-36 overflow-hidden bg-gradient-to-br from-rose-100 to-pink-100">
                         {images.length > 0 ? (
                           <img src={images[0].imageUrl} alt="Preview" className="w-full h-full object-cover" />
@@ -1052,23 +1052,23 @@ export default function OwnerHallFormPage() {
                         </div>
                       </div>
                       <CardContent className="p-3 space-y-2">
-                        <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                        <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-muted-foreground">
                           <MapPin className="w-3 h-3 text-rose-400" />
                           <span className="truncate">{district || 'Tuman'}, {address || 'Manzil'}</span>
                         </div>
-                        <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                        <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-muted-foreground">
                           <Users className="w-3 h-3 text-rose-400" />
                           <span>{capacity || '0'} kishi</span>
                         </div>
-                        <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                        <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-muted-foreground">
                           <DollarSign className="w-3 h-3 text-rose-400" />
                           <span className="font-semibold">{seatPrice ? formatPrice(parseFloat(seatPrice)) : '0 so\'m'} / o&apos;rindiq</span>
                         </div>
                         <div className="flex flex-wrap gap-1 pt-1">
-                          {images.length > 0 && <Badge variant="outline" className="text-[10px] bg-rose-50 border-rose-100 text-rose-600">{images.length} rasm</Badge>}
-                          {singers.length > 0 && <Badge variant="outline" className="text-[10px] bg-rose-50 border-rose-100 text-rose-600">{singers.length} xonanda</Badge>}
-                          {menus.length > 0 && <Badge variant="outline" className="text-[10px] bg-rose-50 border-rose-100 text-rose-600">{menus.length} menyu</Badge>}
-                          {cars.length > 0 && <Badge variant="outline" className="text-[10px] bg-rose-50 border-rose-100 text-rose-600">{cars.length} mashina</Badge>}
+                          {images.length > 0 && <Badge variant="outline" className="text-[10px] bg-rose-50 dark:bg-rose-900/20 border-rose-100 dark:border-rose-900/20 text-rose-600">{images.length} rasm</Badge>}
+                          {singers.length > 0 && <Badge variant="outline" className="text-[10px] bg-rose-50 dark:bg-rose-900/20 border-rose-100 dark:border-rose-900/20 text-rose-600">{singers.length} xonanda</Badge>}
+                          {menus.length > 0 && <Badge variant="outline" className="text-[10px] bg-rose-50 dark:bg-rose-900/20 border-rose-100 dark:border-rose-900/20 text-rose-600">{menus.length} menyu</Badge>}
+                          {cars.length > 0 && <Badge variant="outline" className="text-[10px] bg-rose-50 dark:bg-rose-900/20 border-rose-100 dark:border-rose-900/20 text-rose-600">{cars.length} mashina</Badge>}
                         </div>
                       </CardContent>
                     </Card>

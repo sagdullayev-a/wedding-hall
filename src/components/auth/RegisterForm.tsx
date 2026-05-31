@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useAppStore } from '@/lib/store'
 import { api } from '@/lib/api'
-import { toast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -71,10 +71,7 @@ export default function RegisterForm() {
       setOtpUserId(data.user.userId)
       navigateTo('verify-otp')
 
-      toast({
-        title: 'Registration successful!',
-        description: 'Please verify your email with the OTP code sent to you.',
-      })
+      toast.success('Registration successful! Please verify your email with the OTP code sent to you.')
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Registration failed'
       setError(errorMessage)

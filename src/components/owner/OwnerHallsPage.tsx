@@ -88,7 +88,7 @@ export default function OwnerHallsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 p-4 md:p-6">
+      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 dark:from-background dark:via-background dark:to-background p-4 md:p-6">
         <div className="max-w-6xl mx-auto">
           <Skeleton className="h-10 w-48 mb-6" />
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
@@ -103,7 +103,7 @@ export default function OwnerHallsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 dark:from-background dark:via-background dark:to-background p-4 md:p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <motion.div
@@ -112,11 +112,11 @@ export default function OwnerHallsPage() {
           className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6"
         >
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-foreground flex items-center gap-2">
               <Sparkles className="w-7 h-7 text-rose-500" />
               Mening To&apos;yxonalarim
             </h1>
-            <p className="text-gray-500 mt-1">To&apos;yxonalaringizni boshqaring</p>
+            <p className="text-gray-500 dark:text-muted-foreground mt-1">To&apos;yxonalaringizni boshqaring</p>
           </div>
           {halls.length > 0 && (
             <Button
@@ -189,13 +189,13 @@ export default function OwnerHallsPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <Card className="border-dashed border-2 border-rose-200 bg-white/50 shadow-none">
+            <Card className="border-dashed border-2 border-rose-200 dark:border-rose-800 bg-white/50 dark:bg-card/50 shadow-none">
               <CardContent className="p-16 text-center">
-                <div className="bg-rose-50 rounded-2xl w-28 h-28 flex items-center justify-center mx-auto mb-6">
+                <div className="bg-rose-50 dark:bg-rose-900/30 rounded-2xl w-28 h-28 flex items-center justify-center mx-auto mb-6">
                   <Building2 className="w-14 h-14 text-rose-300" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-700 mb-2">Hech qanday to&apos;yxona yo&apos;q</h3>
-                <p className="text-gray-500 mb-6 max-w-sm mx-auto">
+                <h3 className="text-xl font-bold text-gray-700 dark:text-foreground mb-2">Hech qanday to&apos;yxona yo&apos;q</h3>
+                <p className="text-gray-500 dark:text-muted-foreground mb-6 max-w-sm mx-auto">
                   Birinchi to&apos;yxonangizni qo&apos;shing va biznesingizni boshlang. To&apos;yxona yaratish oson va tez!
                 </p>
                 <Button
@@ -219,11 +219,11 @@ export default function OwnerHallsPage() {
               transition={{ delay: 0.05 }}
             >
               <Card
-                className="border-2 border-dashed border-rose-300 bg-rose-50/30 hover:bg-rose-50/60 hover:border-rose-400 cursor-pointer transition-all duration-300 group min-h-[320px] flex items-center justify-center"
+                className="border-2 border-dashed border-rose-300 dark:border-rose-700 bg-rose-50/30 dark:bg-rose-900/10 hover:bg-rose-50/60 dark:hover:bg-rose-900/20 hover:border-rose-400 cursor-pointer transition-all duration-300 group min-h-[320px] flex items-center justify-center"
                 onClick={handleAddHall}
               >
                 <CardContent className="p-6 text-center">
-                  <div className="bg-rose-100 rounded-2xl w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:bg-rose-200 transition-colors">
+                  <div className="bg-rose-100 dark:bg-rose-900/40 rounded-2xl w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:bg-rose-200 dark:group-hover:bg-rose-900/60 transition-colors">
                     <Plus className="w-8 h-8 text-rose-400 group-hover:text-rose-500 transition-colors" />
                   </div>
                   <p className="font-semibold text-rose-600 group-hover:text-rose-700 transition-colors">Yangi To&apos;yxona Qo&apos;shish</p>
@@ -240,7 +240,7 @@ export default function OwnerHallsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 + index * 0.05 }}
               >
-                <Card className="overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300 group border-0 shadow-md bg-white">
+                <Card className="overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300 group border-0 dark:border dark:border-rose-900/20 shadow-md bg-white dark:bg-card">
                   {/* Image with Gradient Overlay */}
                   <div className="relative h-44 overflow-hidden">
                     {hall.images && hall.images.length > 0 ? (
@@ -283,7 +283,7 @@ export default function OwnerHallsPage() {
                   <CardContent className="p-4">
                     {/* Status Timeline for Pending Halls */}
                     {hall.status === 'pending' && (
-                      <div className="mb-3 p-2.5 bg-amber-50 rounded-lg border border-amber-100">
+                      <div className="mb-3 p-2.5 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-100 dark:border-amber-900/30">
                         <div className="flex items-center justify-between">
                           {STATUS_STEPS.map((step, idx) => {
                             const isCompleted = idx < 2
@@ -312,7 +312,7 @@ export default function OwnerHallsPage() {
                       </div>
                     )}
 
-                    <div className="space-y-2 text-sm text-gray-600">
+                    <div className="space-y-2 text-sm text-gray-600 dark:text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <MapPin className="w-3.5 h-3.5 text-rose-400 shrink-0" />
                         <span className="truncate">{hall.district}, {hall.address}</span>
@@ -323,18 +323,18 @@ export default function OwnerHallsPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <DollarSign className="w-3.5 h-3.5 text-rose-400 shrink-0" />
-                        <span className="font-semibold text-gray-900">{formatPrice(hall.seatPrice)} / o&apos;rindiq</span>
+                        <span className="font-semibold text-gray-900 dark:text-foreground">{formatPrice(hall.seatPrice)} / o&apos;rindiq</span>
                       </div>
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex gap-2 mt-3 pt-3 border-t border-rose-50">
+                    <div className="flex gap-2 mt-3 pt-3 border-t border-rose-50 dark:border-rose-900/20">
                       {hall.status === 'approved' && (
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={(e) => { e.stopPropagation(); handleViewHall(hall.hallId) }}
-                          className="flex-1 border-rose-200 text-rose-600 hover:bg-rose-50 h-8 text-xs"
+                          className="flex-1 border-rose-200 dark:border-rose-800 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 h-8 text-xs"
                         >
                           <Eye className="w-3.5 h-3.5 mr-1" />
                           Ko&apos;rish
@@ -344,7 +344,7 @@ export default function OwnerHallsPage() {
                         variant="outline"
                         size="sm"
                         onClick={(e) => { e.stopPropagation(); handleEditHall(hall.hallId) }}
-                        className="flex-1 border-rose-200 text-gray-600 hover:bg-rose-50 h-8 text-xs"
+                        className="flex-1 border-rose-200 dark:border-rose-800 text-gray-600 dark:text-muted-foreground hover:bg-rose-50 dark:hover:bg-rose-900/20 h-8 text-xs"
                       >
                         <FileEdit className="w-3.5 h-3.5 mr-1" />
                         Tahrirlash
@@ -365,16 +365,16 @@ export default function OwnerHallsPage() {
             transition={{ delay: 0.4 }}
             className="mt-6"
           >
-            <Card className="shadow-md border-0 bg-white">
+            <Card className="shadow-md border-0 dark:border dark:border-rose-900/20 bg-white dark:bg-card">
               <CardContent className="p-5">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h3 className="font-semibold text-gray-900">Tasdiqlash Jarayoni</h3>
-                    <p className="text-sm text-gray-500">{approvedHalls} / {totalHalls} to&apos;yxonalar tasdiqlangan</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-foreground">Tasdiqlash Jarayoni</h3>
+                    <p className="text-sm text-gray-500 dark:text-muted-foreground">{approvedHalls} / {totalHalls} to&apos;yxonalar tasdiqlangan</p>
                   </div>
                   <div className="flex-1 max-w-xs">
                     <div className="flex items-center justify-between text-sm mb-1.5">
-                      <span className="text-gray-600">Tasdiqlangan</span>
+                      <span className="text-gray-600 dark:text-muted-foreground">Tasdiqlangan</span>
                       <span className="font-semibold text-rose-600">{totalHalls > 0 ? Math.round((approvedHalls / totalHalls) * 100) : 0}%</span>
                     </div>
                     <Progress value={totalHalls > 0 ? (approvedHalls / totalHalls) * 100 : 0} className="h-2.5 bg-rose-100 [&>[data-slot=indicator]]:bg-gradient-to-r [&>[data-slot=indicator]]:from-rose-500 [&>[data-slot=indicator]]:to-pink-500" />

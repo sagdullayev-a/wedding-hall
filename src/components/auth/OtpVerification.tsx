@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAppStore } from '@/lib/store'
 import { api } from '@/lib/api'
-import { toast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from '@/components/ui/input-otp'
@@ -55,10 +55,7 @@ export default function OtpVerification() {
     try {
       await api.verifyOtp({ userId: otpUserId, otpCode })
 
-      toast({
-        title: 'Email verified!',
-        description: 'Your email has been verified successfully.',
-      })
+      toast.success('Email verified! Your email has been verified successfully.')
 
       // Clear OTP user ID
       setOtpUserId(null)
@@ -94,10 +91,7 @@ export default function OtpVerification() {
       await api.resendOtp({ userId: otpUserId })
       setTimeLeft(COUNTDOWN_SECONDS)
       setOtpCode('')
-      toast({
-        title: 'OTP Resent!',
-        description: 'A new verification code has been sent to your email.',
-      })
+      toast.success('OTP Resent! A new verification code has been sent to your email.')
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to resend OTP'
       setError(errorMessage)

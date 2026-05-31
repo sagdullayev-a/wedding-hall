@@ -102,7 +102,7 @@ function StarRating({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'md
           className={`${sizeClass} ${
             star <= rating
               ? 'text-amber-400 fill-amber-400'
-              : 'text-gray-200 fill-gray-200'
+              : 'text-gray-200 fill-gray-200 dark:text-gray-700 dark:fill-gray-700'
           }`}
         />
       ))}
@@ -127,7 +127,7 @@ function ClickableStarRating({ value, onChange }: { value: number; onChange: (v:
             className={`w-7 h-7 ${
               star <= (hover || value)
                 ? 'text-amber-400 fill-amber-400'
-                : 'text-gray-200 fill-gray-200'
+                : 'text-gray-200 fill-gray-200 dark:text-gray-700 dark:fill-gray-700'
             } transition-colors`}
           />
         </button>
@@ -343,7 +343,7 @@ export default function HallDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white dark:from-background dark:to-background max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Skeleton className="h-8 w-24 mb-6" />
         <Skeleton className="h-64 sm:h-96 mb-6 rounded-2xl" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -360,9 +360,9 @@ export default function HallDetailPage() {
 
   if (!hall) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white dark:from-background dark:to-background max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Card className="p-12 text-center">
-          <Building2 className="w-16 h-16 mx-auto text-rose-200 mb-4" />
+          <Building2 className="w-16 h-16 mx-auto text-rose-200 dark:text-rose-700 mb-4" />
           <h3 className="text-lg font-semibold mb-2">Hall Not Found</h3>
           <Button onClick={() => navigateTo('halls')} className="bg-rose-500 hover:bg-rose-600 text-white">
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -376,7 +376,7 @@ export default function HallDetailPage() {
   const calendarDays = getCalendarDays()
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white pb-20 sm:pb-0">
+    <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white dark:from-background dark:to-background pb-20 sm:pb-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Back button */}
         <motion.div
@@ -387,7 +387,7 @@ export default function HallDetailPage() {
           <Button
             variant="ghost"
             onClick={() => navigateTo('halls')}
-            className="mb-4 text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+            className="mb-4 text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-900/20"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Halls
@@ -427,7 +427,7 @@ export default function HallDetailPage() {
                       variant="ghost"
                       size="icon"
                       onClick={prevImage}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full h-10 w-10 shadow-lg"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white dark:bg-card/80 dark:hover:bg-card rounded-full h-10 w-10 shadow-lg"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </Button>
@@ -435,7 +435,7 @@ export default function HallDetailPage() {
                       variant="ghost"
                       size="icon"
                       onClick={nextImage}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full h-10 w-10 shadow-lg"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white dark:bg-card/80 dark:hover:bg-card rounded-full h-10 w-10 shadow-lg"
                     >
                       <ChevronRight className="w-5 h-5" />
                     </Button>
@@ -461,8 +461,8 @@ export default function HallDetailPage() {
               </div>
             </div>
           ) : (
-            <div className="aspect-[21/9] bg-gradient-to-br from-rose-100 to-amber-100 rounded-2xl flex items-center justify-center">
-              <Building2 className="w-20 h-20 text-rose-300" />
+            <div className="aspect-[21/9] bg-gradient-to-br from-rose-100 to-amber-100 dark:from-rose-900/30 dark:to-amber-900/30 rounded-2xl flex items-center justify-center">
+              <Building2 className="w-20 h-20 text-rose-300 dark:text-rose-600" />
             </div>
           )}
         </motion.div>
@@ -476,7 +476,7 @@ export default function HallDetailPage() {
             className="lg:col-span-2 space-y-6"
           >
             {/* Basic Info */}
-            <Card className="border-rose-100">
+            <Card className="border-rose-100 dark:border-rose-900/30">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div className="min-w-0">
@@ -495,13 +495,13 @@ export default function HallDetailPage() {
                     size="icon"
                     onClick={toggleFavorite}
                     disabled={favoriteLoading}
-                    className="shrink-0 h-10 w-10 rounded-full hover:bg-rose-50"
+                    className="shrink-0 h-10 w-10 rounded-full hover:bg-rose-50 dark:hover:bg-rose-900/20"
                   >
                     <Heart
                       className={`w-6 h-6 transition-colors ${
                         isFavorite
                           ? 'text-rose-500 fill-rose-500'
-                          : 'text-gray-400 hover:text-rose-400'
+                          : 'text-gray-400 hover:text-rose-400 dark:text-gray-500 dark:hover:text-rose-400'
                       }`}
                     />
                   </Button>
@@ -521,12 +521,12 @@ export default function HallDetailPage() {
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Star className="w-4 h-4 text-amber-500 shrink-0" />
-                    <span className="font-semibold text-rose-600">{formatPrice(hall.seatPrice)} per seat</span>
+                    <span className="font-semibold text-rose-600 dark:text-rose-400">{formatPrice(hall.seatPrice)} per seat</span>
                   </div>
                 </div>
                 {hall.hasKarnaySurnay && (
                   <div className="mt-4">
-                    <Badge className="bg-amber-100 text-amber-800 border-amber-200">
+                    <Badge className="bg-amber-100 dark:bg-amber-900/20 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800">
                       <Music className="w-3.5 h-3.5 mr-1" />
                       Karnay-Surnay Available — {formatPrice(hall.karnaySurnayPrice || 0)}
                     </Badge>
@@ -536,10 +536,10 @@ export default function HallDetailPage() {
             </Card>
 
             {/* Tabs for Services */}
-            <Card className="border-rose-100">
+            <Card className="border-rose-100 dark:border-rose-900/30">
               <CardContent className="p-6">
                 <Tabs defaultValue="singers">
-                  <TabsList className="mb-4 bg-rose-50">
+                  <TabsList className="mb-4 bg-rose-50 dark:bg-rose-900/20">
                     <TabsTrigger value="singers" className="data-[state=active]:bg-rose-500 data-[state=active]:text-white">
                       <Music className="w-4 h-4 mr-1.5" />
                       Singers
@@ -562,20 +562,20 @@ export default function HallDetailPage() {
                         {hall.singers.map((singer) => (
                           <div
                             key={singer.singerId}
-                            className="flex items-center gap-3 p-3 rounded-xl border border-rose-100 hover:bg-rose-50/50 transition-colors"
+                            className="flex items-center gap-3 p-3 rounded-xl border border-rose-100 dark:border-rose-900/30 hover:bg-rose-50/50 dark:hover:bg-rose-900/10 transition-colors"
                           >
-                            <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-rose-100">
+                            <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-rose-100 dark:bg-rose-900/30">
                               {singer.imageUrl ? (
                                 <img src={singer.imageUrl} alt={singer.singerName} className="w-full h-full object-cover" />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center">
-                                  <Music className="w-5 h-5 text-rose-400" />
+                                  <Music className="w-5 h-5 text-rose-400 dark:text-rose-500" />
                                 </div>
                               )}
                             </div>
                             <div className="min-w-0 flex-1">
                               <p className="font-medium text-sm truncate">{singer.singerName}</p>
-                              <p className="text-xs text-rose-600 font-medium">{formatPrice(singer.price)}</p>
+                              <p className="text-xs text-rose-600 dark:text-rose-400 font-medium">{formatPrice(singer.price)}</p>
                             </div>
                           </div>
                         ))}
@@ -591,10 +591,10 @@ export default function HallDetailPage() {
                         {hall.menus.map((menu) => (
                           <div
                             key={menu.menuId}
-                            className="flex items-center gap-3 p-3 rounded-xl border border-rose-100 hover:bg-rose-50/50 transition-colors"
+                            className="flex items-center gap-3 p-3 rounded-xl border border-rose-100 dark:border-rose-900/30 hover:bg-rose-50/50 dark:hover:bg-rose-900/10 transition-colors"
                           >
-                            <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center shrink-0">
-                              <Utensils className="w-5 h-5 text-amber-500" />
+                            <div className="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center shrink-0">
+                              <Utensils className="w-5 h-5 text-amber-500 dark:text-amber-400" />
                             </div>
                             <p className="font-medium text-sm">{menu.menuName}</p>
                           </div>
@@ -611,20 +611,20 @@ export default function HallDetailPage() {
                         {hall.cars.map((car) => (
                           <div
                             key={car.carId}
-                            className="flex items-center gap-3 p-3 rounded-xl border border-rose-100 hover:bg-rose-50/50 transition-colors"
+                            className="flex items-center gap-3 p-3 rounded-xl border border-rose-100 dark:border-rose-900/30 hover:bg-rose-50/50 dark:hover:bg-rose-900/10 transition-colors"
                           >
-                            <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-rose-100">
+                            <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-rose-100 dark:bg-rose-900/30">
                               {car.imageUrl ? (
                                 <img src={car.imageUrl} alt={car.brand} className="w-full h-full object-cover" />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center">
-                                  <Car className="w-5 h-5 text-rose-400" />
+                                  <Car className="w-5 h-5 text-rose-400 dark:text-rose-500" />
                                 </div>
                               )}
                             </div>
                             <div className="min-w-0 flex-1">
                               <p className="font-medium text-sm truncate">{car.brand}</p>
-                              <p className="text-xs text-rose-600 font-medium">{formatPrice(car.price)}</p>
+                              <p className="text-xs text-rose-600 dark:text-rose-400 font-medium">{formatPrice(car.price)}</p>
                             </div>
                           </div>
                         ))}
@@ -636,7 +636,7 @@ export default function HallDetailPage() {
             </Card>
 
             {/* Reviews Section */}
-            <Card className="border-rose-100">
+            <Card className="border-rose-100 dark:border-rose-900/30">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <div>
@@ -675,7 +675,7 @@ export default function HallDetailPage() {
                             value={newReviewComment}
                             onChange={(e) => setNewReviewComment(e.target.value)}
                             rows={4}
-                            className="resize-none border-rose-100 focus:border-rose-300"
+                            className="resize-none border-rose-100 dark:border-rose-900/30 focus:border-rose-300"
                           />
                         </div>
                         <Button
@@ -711,7 +711,7 @@ export default function HallDetailPage() {
                   </div>
                 ) : reviews.length === 0 ? (
                   <div className="text-center py-8">
-                    <MessageSquare className="w-12 h-12 mx-auto text-rose-200 mb-3" />
+                    <MessageSquare className="w-12 h-12 mx-auto text-rose-200 dark:text-rose-700 mb-3" />
                     <p className="text-muted-foreground">No reviews yet. Be the first to review!</p>
                   </div>
                 ) : (
@@ -721,7 +721,7 @@ export default function HallDetailPage() {
                         key={review.reviewId}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="p-4 rounded-xl border border-rose-100 hover:bg-rose-50/30 transition-colors"
+                        className="p-4 rounded-xl border border-rose-100 dark:border-rose-900/30 hover:bg-rose-50/30 dark:hover:bg-rose-900/10 transition-colors"
                       >
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
@@ -756,16 +756,16 @@ export default function HallDetailPage() {
             className="space-y-4"
           >
             {/* Calendar */}
-            <Card className="border-rose-100">
+            <Card className="border-rose-100 dark:border-rose-900/30">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-4">
-                  <Button variant="ghost" size="icon" onClick={prevMonth} className="h-8 w-8 hover:bg-rose-50">
+                  <Button variant="ghost" size="icon" onClick={prevMonth} className="h-8 w-8 hover:bg-rose-50 dark:hover:bg-rose-900/20">
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
                   <h3 className="font-semibold text-sm">
                     {MONTH_NAMES[calMonth - 1]} {calYear}
                   </h3>
-                  <Button variant="ghost" size="icon" onClick={nextMonth} className="h-8 w-8 hover:bg-rose-50">
+                  <Button variant="ghost" size="icon" onClick={nextMonth} className="h-8 w-8 hover:bg-rose-50 dark:hover:bg-rose-900/20">
                     <ChevronRight className="w-4 h-4" />
                   </Button>
                 </div>
@@ -794,9 +794,9 @@ export default function HallDetailPage() {
                         disabled={!isClickable}
                         className={`
                           aspect-square rounded-lg text-xs font-medium flex items-center justify-center transition-all
-                          ${status === 'available' && 'bg-green-100 text-green-800 hover:bg-green-200 cursor-pointer border border-green-200 hover:scale-105'}
-                          ${status === 'booked' && 'bg-red-100 text-red-800 cursor-not-allowed border border-red-200'}
-                          ${status === 'past' && 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'}
+                          ${status === 'available' && 'bg-green-100 text-green-800 hover:bg-green-200 cursor-pointer border border-green-200 hover:scale-105 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800 dark:hover:bg-green-900/30'}
+                          ${status === 'booked' && 'bg-red-100 text-red-800 cursor-not-allowed border border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800'}
+                          ${status === 'past' && 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200 dark:bg-gray-800/30 dark:text-gray-500 dark:border-gray-700'}
                         `}
                       >
                         {day}
@@ -808,15 +808,15 @@ export default function HallDetailPage() {
                 {/* Legend */}
                 <div className="flex items-center gap-3 mt-4 text-xs">
                   <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded bg-green-100 border border-green-200" />
+                    <div className="w-3 h-3 rounded bg-green-100 border border-green-200 dark:bg-green-900/20 dark:border-green-800" />
                     <span className="text-muted-foreground">Available</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded bg-red-100 border border-red-200" />
+                    <div className="w-3 h-3 rounded bg-red-100 border border-red-200 dark:bg-red-900/20 dark:border-red-800" />
                     <span className="text-muted-foreground">Booked</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded bg-gray-100 border border-gray-200" />
+                    <div className="w-3 h-3 rounded bg-gray-100 border border-gray-200 dark:bg-gray-800/30 dark:border-gray-700" />
                     <span className="text-muted-foreground">Past</span>
                   </div>
                 </div>
@@ -826,14 +826,14 @@ export default function HallDetailPage() {
             {/* Book Button */}
             <Button
               onClick={handleBookNow}
-              className="w-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white rounded-xl h-12 text-base shadow-lg shadow-rose-200/50"
+              className="w-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white rounded-xl h-12 text-base shadow-lg shadow-rose-200/50 dark:shadow-rose-900/30"
             >
               <Calendar className="w-5 h-5 mr-2" />
               Book This Hall
             </Button>
 
             {/* Quick Info Card */}
-            <Card className="border-rose-100 bg-gradient-to-br from-rose-50 to-amber-50">
+            <Card className="border-rose-100 dark:border-rose-900/30 bg-gradient-to-br from-rose-50 to-amber-50 dark:from-rose-950/20 dark:to-amber-950/20">
               <CardContent className="p-4 space-y-2">
                 <div className="flex items-center gap-2 text-sm">
                   <Check className="w-4 h-4 text-emerald-500" />
@@ -854,15 +854,15 @@ export default function HallDetailPage() {
       </div>
 
       {/* Sticky Book Bar - Mobile */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-rose-100 p-3 sm:hidden z-50">
+      <div className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-card/95 backdrop-blur-sm border-t border-rose-100 dark:border-rose-900/30 p-3 sm:hidden z-50">
         <div className="flex items-center gap-3 max-w-lg mx-auto">
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-sm truncate">{hall.name}</p>
-            <p className="text-xs text-rose-600 font-medium">{formatPrice(hall.seatPrice)}/seat</p>
+            <p className="text-xs text-rose-600 dark:text-rose-400 font-medium">{formatPrice(hall.seatPrice)}/seat</p>
           </div>
           <Button
             onClick={handleBookNow}
-            className="bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white rounded-xl h-11 shadow-lg shadow-rose-200/50"
+            className="bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white rounded-xl h-11 shadow-lg shadow-rose-200/50 dark:shadow-rose-900/30"
           >
             <Calendar className="w-4 h-4 mr-1.5" />
             Book Now

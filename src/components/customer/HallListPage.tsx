@@ -67,7 +67,7 @@ function StarDisplay({ rating, count }: { rating: number; count: number }) {
             className={`w-3 h-3 ${
               i < Math.round(rating)
                 ? 'text-amber-400 fill-amber-400'
-                : 'text-gray-200 fill-gray-200'
+                : 'text-gray-200 fill-gray-200 dark:text-gray-700 dark:fill-gray-700'
             }`}
           />
         ))}
@@ -88,7 +88,7 @@ function HallCardGrid({ hall, onHallClick, onFavoriteToggle, favorites }: {
   const isFav = favorites.has(hall.hallId)
   return (
     <Card
-      className="overflow-hidden cursor-pointer group hover:shadow-xl hover:shadow-rose-200/40 transition-all duration-300 border-rose-100 hover:scale-[1.02]"
+      className="overflow-hidden cursor-pointer group hover:shadow-xl hover:shadow-rose-200/40 dark:hover:shadow-rose-900/20 transition-all duration-300 border-rose-100 dark:border-rose-900/30 hover:scale-[1.02]"
       onClick={() => onHallClick(hall.hallId)}
     >
       <div className="relative h-48 overflow-hidden">
@@ -99,8 +99,8 @@ function HallCardGrid({ hall, onHallClick, onFavoriteToggle, favorites }: {
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-rose-100 to-amber-100 flex items-center justify-center">
-            <Building2 className="w-14 h-14 text-rose-300" />
+          <div className="w-full h-full bg-gradient-to-br from-rose-100 to-amber-100 dark:from-rose-900/30 dark:to-amber-900/30 flex items-center justify-center">
+            <Building2 className="w-14 h-14 text-rose-300 dark:text-rose-600" />
           </div>
         )}
         {hall.hasKarnaySurnay && (
@@ -114,20 +114,20 @@ function HallCardGrid({ hall, onHallClick, onFavoriteToggle, favorites }: {
             e.stopPropagation()
             onFavoriteToggle(hall.hallId)
           }}
-          className="absolute top-3 right-3 h-8 w-8 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-md transition-all hover:scale-110"
+          className="absolute top-3 right-3 h-8 w-8 rounded-full bg-white/90 dark:bg-card/90 hover:bg-white dark:hover:bg-card flex items-center justify-center shadow-md transition-all hover:scale-110"
         >
           <Heart
             className={`w-4 h-4 transition-colors ${
               isFav
                 ? 'text-rose-500 fill-rose-500'
-                : 'text-gray-500 hover:text-rose-400'
+                : 'text-gray-500 hover:text-rose-400 dark:text-gray-400'
             }`}
           />
         </button>
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
       </div>
       <CardContent className="p-4">
-        <h3 className="font-semibold text-base mb-1 group-hover:text-rose-600 transition-colors line-clamp-1">
+        <h3 className="font-semibold text-base mb-1 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors line-clamp-1">
           {hall.name}
         </h3>
         <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
@@ -138,11 +138,11 @@ function HallCardGrid({ hall, onHallClick, onFavoriteToggle, favorites }: {
           <StarDisplay rating={hall.averageRating} count={hall.reviewCount || 0} />
         )}
         <div className="flex items-center justify-between mt-3">
-          <Badge variant="secondary" className="bg-rose-50 text-rose-700 border-rose-100">
+          <Badge variant="secondary" className="bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-300 border-rose-100 dark:border-rose-800">
             <Users className="w-3 h-3 mr-1" />
             {hall.capacity}
           </Badge>
-          <span className="text-sm font-semibold text-rose-600">
+          <span className="text-sm font-semibold text-rose-600 dark:text-rose-400">
             {formatPrice(hall.seatPrice)}/seat
           </span>
         </div>
@@ -160,7 +160,7 @@ function HallCardList({ hall, onHallClick, onFavoriteToggle, favorites }: {
   const isFav = favorites.has(hall.hallId)
   return (
     <Card
-      className="overflow-hidden cursor-pointer group hover:shadow-xl hover:shadow-rose-200/40 transition-all duration-300 border-rose-100 hover:scale-[1.01]"
+      className="overflow-hidden cursor-pointer group hover:shadow-xl hover:shadow-rose-200/40 dark:hover:shadow-rose-900/20 transition-all duration-300 border-rose-100 dark:border-rose-900/30 hover:scale-[1.01]"
       onClick={() => onHallClick(hall.hallId)}
     >
       <div className="flex">
@@ -172,8 +172,8 @@ function HallCardList({ hall, onHallClick, onFavoriteToggle, favorites }: {
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
             />
           ) : (
-            <div className="w-full h-full min-h-[120px] bg-gradient-to-br from-rose-100 to-amber-100 flex items-center justify-center">
-              <Building2 className="w-10 h-10 text-rose-300" />
+            <div className="w-full h-full min-h-[120px] bg-gradient-to-br from-rose-100 to-amber-100 dark:from-rose-900/30 dark:to-amber-900/30 flex items-center justify-center">
+              <Building2 className="w-10 h-10 text-rose-300 dark:text-rose-600" />
             </div>
           )}
           <button
@@ -181,19 +181,19 @@ function HallCardList({ hall, onHallClick, onFavoriteToggle, favorites }: {
               e.stopPropagation()
               onFavoriteToggle(hall.hallId)
             }}
-            className="absolute top-2 right-2 h-7 w-7 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-sm transition-all hover:scale-110"
+            className="absolute top-2 right-2 h-7 w-7 rounded-full bg-white/90 dark:bg-card/90 hover:bg-white dark:hover:bg-card flex items-center justify-center shadow-sm transition-all hover:scale-110"
           >
             <Heart
               className={`w-3.5 h-3.5 transition-colors ${
                 isFav
                   ? 'text-rose-500 fill-rose-500'
-                  : 'text-gray-500 hover:text-rose-400'
+                  : 'text-gray-500 hover:text-rose-400 dark:text-gray-400'
               }`}
             />
           </button>
         </div>
         <CardContent className="p-4 flex-1 min-w-0">
-          <h3 className="font-semibold text-base mb-1 group-hover:text-rose-600 transition-colors line-clamp-1">
+          <h3 className="font-semibold text-base mb-1 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors line-clamp-1">
             {hall.name}
           </h3>
           <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
@@ -204,18 +204,18 @@ function HallCardList({ hall, onHallClick, onFavoriteToggle, favorites }: {
             <StarDisplay rating={hall.averageRating} count={hall.reviewCount || 0} />
           )}
           <div className="flex items-center gap-3 mt-2">
-            <Badge variant="secondary" className="bg-rose-50 text-rose-700 border-rose-100">
+            <Badge variant="secondary" className="bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-300 border-rose-100 dark:border-rose-800">
               <Users className="w-3 h-3 mr-1" />
               {hall.capacity} guests
             </Badge>
             {hall.hasKarnaySurnay && (
-              <Badge className="bg-amber-100 text-amber-800 border-amber-200 text-xs">
+              <Badge className="bg-amber-100 dark:bg-amber-900/20 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800 text-xs">
                 <Music className="w-3 h-3 mr-1" />
                 Karnay-Surnay
               </Badge>
             )}
           </div>
-          <p className="text-sm font-semibold text-rose-600 mt-2">
+          <p className="text-sm font-semibold text-rose-600 dark:text-rose-400 mt-2">
             {formatPrice(hall.seatPrice)}/seat
           </p>
         </CardContent>
@@ -347,7 +347,7 @@ export default function HallListPage() {
   const FilterContent = () => (
     <div className="space-y-5">
       <div>
-        <label className="text-sm font-medium mb-1.5 block text-rose-900">Search by Name</label>
+        <label className="text-sm font-medium mb-1.5 block text-rose-900 dark:text-rose-200">Search by Name</label>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-rose-400" />
           <Input
@@ -355,15 +355,15 @@ export default function HallListPage() {
             value={search}
             onChange={(e) => { setSearch(e.target.value); setCurrentPage(1) }}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            className="pl-9 border-rose-200 focus:border-rose-400 focus:ring-rose-200"
+            className="pl-9 border-rose-200 dark:border-rose-800 focus:border-rose-400 focus:ring-rose-200"
           />
         </div>
       </div>
 
       <div>
-        <label className="text-sm font-medium mb-1.5 block text-rose-900">District</label>
+        <label className="text-sm font-medium mb-1.5 block text-rose-900 dark:text-rose-200">District</label>
         <Select value={district} onValueChange={(v) => { setDistrict(v === 'all' ? '' : v); setCurrentPage(1) }}>
-          <SelectTrigger className="border-rose-200 focus:border-rose-400">
+          <SelectTrigger className="border-rose-200 dark:border-rose-800 focus:border-rose-400">
             <SelectValue placeholder="All districts" />
           </SelectTrigger>
           <SelectContent>
@@ -376,33 +376,33 @@ export default function HallListPage() {
       </div>
 
       <div>
-        <label className="text-sm font-medium mb-1.5 block text-rose-900">Min Capacity</label>
+        <label className="text-sm font-medium mb-1.5 block text-rose-900 dark:text-rose-200">Min Capacity</label>
         <Input
           type="number"
           placeholder="Min guests"
           value={minCapacity}
           onChange={(e) => { setMinCapacity(e.target.value); setCurrentPage(1) }}
           min={0}
-          className="border-rose-200 focus:border-rose-400 focus:ring-rose-200"
+          className="border-rose-200 dark:border-rose-800 focus:border-rose-400 focus:ring-rose-200"
         />
       </div>
 
       <div>
-        <label className="text-sm font-medium mb-1.5 block text-rose-900">Max Price per Seat</label>
+        <label className="text-sm font-medium mb-1.5 block text-rose-900 dark:text-rose-200">Max Price per Seat</label>
         <Input
           type="number"
           placeholder="Max price"
           value={maxPrice}
           onChange={(e) => { setMaxPrice(e.target.value); setCurrentPage(1) }}
           min={0}
-          className="border-rose-200 focus:border-rose-400 focus:ring-rose-200"
+          className="border-rose-200 dark:border-rose-800 focus:border-rose-400 focus:ring-rose-200"
         />
       </div>
 
       <div>
-        <label className="text-sm font-medium mb-1.5 block text-rose-900">Sort By</label>
+        <label className="text-sm font-medium mb-1.5 block text-rose-900 dark:text-rose-200">Sort By</label>
         <Select value={sortBy} onValueChange={(v) => { setSortBy(v); setCurrentPage(1) }}>
-          <SelectTrigger className="border-rose-200 focus:border-rose-400">
+          <SelectTrigger className="border-rose-200 dark:border-rose-800 focus:border-rose-400">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -415,9 +415,9 @@ export default function HallListPage() {
       </div>
 
       <div>
-        <label className="text-sm font-medium mb-1.5 block text-rose-900">Order</label>
+        <label className="text-sm font-medium mb-1.5 block text-rose-900 dark:text-rose-200">Order</label>
         <Select value={order} onValueChange={(v) => { setOrder(v); setCurrentPage(1) }}>
-          <SelectTrigger className="border-rose-200 focus:border-rose-400">
+          <SelectTrigger className="border-rose-200 dark:border-rose-800 focus:border-rose-400">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -428,7 +428,7 @@ export default function HallListPage() {
       </div>
 
       {hasActiveFilters && (
-        <Button variant="ghost" onClick={clearFilters} className="w-full text-rose-600 hover:bg-rose-50">
+        <Button variant="ghost" onClick={clearFilters} className="w-full text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20">
           <X className="w-4 h-4 mr-1" />
           Clear All Filters
         </Button>
@@ -437,7 +437,7 @@ export default function HallListPage() {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-rose-50/50 to-white dark:from-background dark:to-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <motion.div
@@ -456,12 +456,12 @@ export default function HallListPage() {
               {loading ? 'Loading...' : `${total} halls found`}
             </p>
           </div>
-          <div className="hidden sm:flex items-center gap-1 bg-rose-50 p-1 rounded-lg border border-rose-100">
+          <div className="hidden sm:flex items-center gap-1 bg-rose-50 dark:bg-rose-900/20 p-1 rounded-lg border border-rose-100 dark:border-rose-800">
             <Button
               variant={viewMode === 'grid' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('grid')}
-              className={viewMode === 'grid' ? 'bg-rose-500 text-white hover:bg-rose-600' : 'hover:bg-rose-100'}
+              className={viewMode === 'grid' ? 'bg-rose-500 text-white hover:bg-rose-600' : 'hover:bg-rose-100 dark:hover:bg-rose-900/30'}
             >
               <LayoutGrid className="w-4 h-4" />
             </Button>
@@ -469,7 +469,7 @@ export default function HallListPage() {
               variant={viewMode === 'list' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('list')}
-              className={viewMode === 'list' ? 'bg-rose-500 text-white hover:bg-rose-600' : 'hover:bg-rose-100'}
+              className={viewMode === 'list' ? 'bg-rose-500 text-white hover:bg-rose-600' : 'hover:bg-rose-100 dark:hover:bg-rose-900/30'}
             >
               <List className="w-4 h-4" />
             </Button>
@@ -484,8 +484,8 @@ export default function HallListPage() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="hidden lg:block w-64 shrink-0"
           >
-            <Card className="p-5 sticky top-4 border-rose-100 bg-gradient-to-b from-white to-rose-50/30 shadow-sm">
-              <h3 className="font-semibold mb-4 flex items-center gap-2 text-rose-900">
+            <Card className="p-5 sticky top-4 border-rose-100 dark:border-rose-900/30 bg-gradient-to-b from-white to-rose-50/30 dark:from-card dark:to-card shadow-sm">
+              <h3 className="font-semibold mb-4 flex items-center gap-2 text-rose-900 dark:text-rose-200">
                 <SlidersHorizontal className="w-4 h-4 text-rose-500" />
                 Filters
               </h3>
@@ -499,7 +499,7 @@ export default function HallListPage() {
             <div className="flex items-center gap-2 mb-4 lg:hidden">
               <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="outline" className="border-rose-200">
+                  <Button variant="outline" className="border-rose-200 dark:border-rose-800">
                     <SlidersHorizontal className="w-4 h-4 mr-2" />
                     Filters
                     {hasActiveFilters && (
@@ -532,12 +532,12 @@ export default function HallListPage() {
               </div>
 
               {/* Mobile view toggle */}
-              <div className="flex items-center gap-1 bg-rose-50 p-1 rounded-lg border border-rose-100">
+              <div className="flex items-center gap-1 bg-rose-50 dark:bg-rose-900/20 p-1 rounded-lg border border-rose-100 dark:border-rose-800">
                 <Button
                   variant={viewMode === 'grid' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('grid')}
-                  className={`h-8 w-8 p-0 ${viewMode === 'grid' ? 'bg-rose-500 text-white hover:bg-rose-600' : 'hover:bg-rose-100'}`}
+                  className={`h-8 w-8 p-0 ${viewMode === 'grid' ? 'bg-rose-500 text-white hover:bg-rose-600' : 'hover:bg-rose-100 dark:hover:bg-rose-900/30'}`}
                 >
                   <LayoutGrid className="w-3.5 h-3.5" />
                 </Button>
@@ -545,7 +545,7 @@ export default function HallListPage() {
                   variant={viewMode === 'list' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('list')}
-                  className={`h-8 w-8 p-0 ${viewMode === 'list' ? 'bg-rose-500 text-white hover:bg-rose-600' : 'hover:bg-rose-100'}`}
+                  className={`h-8 w-8 p-0 ${viewMode === 'list' ? 'bg-rose-500 text-white hover:bg-rose-600' : 'hover:bg-rose-100 dark:hover:bg-rose-900/30'}`}
                 >
                   <List className="w-3.5 h-3.5" />
                 </Button>
@@ -592,13 +592,13 @@ export default function HallListPage() {
                 </div>
               )
             ) : halls.length === 0 ? (
-              <Card className="p-12 text-center border-rose-100">
-                <Building2 className="w-16 h-16 mx-auto text-rose-200 mb-4" />
+              <Card className="p-12 text-center border-rose-100 dark:border-rose-900/30">
+                <Building2 className="w-16 h-16 mx-auto text-rose-200 dark:text-rose-700 mb-4" />
                 <h3 className="text-lg font-semibold mb-2">No Halls Found</h3>
                 <p className="text-muted-foreground mb-4">
                   Try adjusting your filters or search criteria
                 </p>
-                <Button onClick={clearFilters} variant="outline" className="border-rose-200 text-rose-600">
+                <Button onClick={clearFilters} variant="outline" className="border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-400">
                   Clear Filters
                 </Button>
               </Card>
@@ -648,7 +648,7 @@ export default function HallListPage() {
                   size="sm"
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="border-rose-200"
+                  className="border-rose-200 dark:border-rose-800"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
@@ -672,8 +672,8 @@ export default function HallListPage() {
                         onClick={() => setCurrentPage(page)}
                         className={
                           currentPage === page
-                            ? 'bg-rose-500 hover:bg-rose-600 text-white border-rose-500'
-                            : 'border-rose-200'
+                            ? 'bg-rose-500 hover:bg-rose-600 text-white border-rose-500 dark:bg-rose-600 dark:border-rose-600'
+                            : 'border-rose-200 dark:border-rose-800'
                         }
                       >
                         {page}
@@ -686,7 +686,7 @@ export default function HallListPage() {
                   size="sm"
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="border-rose-200"
+                  className="border-rose-200 dark:border-rose-800"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </Button>

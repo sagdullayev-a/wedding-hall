@@ -100,7 +100,7 @@ export default function OwnerBookingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 p-4 md:p-6">
+      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 dark:from-background dark:via-background dark:to-background p-4 md:p-6">
         <div className="max-w-4xl mx-auto">
           <Skeleton className="h-10 w-56 mb-6" />
           <div className="space-y-3">
@@ -112,7 +112,7 @@ export default function OwnerBookingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 dark:from-background dark:via-background dark:to-background p-4 md:p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <motion.div
@@ -120,8 +120,8 @@ export default function OwnerBookingsPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Bronlar</h1>
-          <p className="text-gray-500 mt-1">To&apos;yxonalarizga qilingan bronlar</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-foreground">Bronlar</h1>
+          <p className="text-gray-500 dark:text-muted-foreground mt-1">To&apos;yxonalarizga qilingan bronlar</p>
         </motion.div>
 
         {/* Stats */}
@@ -158,7 +158,7 @@ export default function OwnerBookingsPage() {
           transition={{ delay: 0.15 }}
         >
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-4 mb-4 bg-white shadow-sm">
+            <TabsList className="grid grid-cols-4 mb-4 bg-white dark:bg-card shadow-sm">
               <TabsTrigger value="upcoming">Kutilmoqda</TabsTrigger>
               <TabsTrigger value="completed">Tugallangan</TabsTrigger>
               <TabsTrigger value="cancelled">Bekor</TabsTrigger>
@@ -174,13 +174,13 @@ export default function OwnerBookingsPage() {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                     >
-                      <Card className="border-dashed border-2 border-rose-200 bg-white/50">
+                      <Card className="border-dashed border-2 border-rose-200 dark:border-rose-800 bg-white/50 dark:bg-rose-900/10">
                         <CardContent className="p-12 text-center">
-                          <div className="bg-rose-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                          <div className="bg-rose-100 dark:bg-rose-900/20 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
                             <ClipboardList className="w-10 h-10 text-rose-400" />
                           </div>
-                          <h3 className="text-lg font-semibold text-gray-700 mb-2">Bronlar yo&apos;q</h3>
-                          <p className="text-gray-500">Bu toifada hali bronlar mavjud emas</p>
+                          <h3 className="text-lg font-semibold text-gray-700 dark:text-foreground mb-2">Bronlar yo&apos;q</h3>
+                          <p className="text-gray-500 dark:text-muted-foreground">Bu toifada hali bronlar mavjud emas</p>
                         </CardContent>
                       </Card>
                     </motion.div>
@@ -195,17 +195,17 @@ export default function OwnerBookingsPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.03 }}
                           >
-                            <Card className="shadow-sm border-0 bg-white hover:shadow-md transition-shadow">
+                            <Card className="shadow-sm border-0 dark:border dark:border-rose-900/20 bg-white dark:bg-card hover:shadow-md transition-shadow">
                               <CardContent className="p-4">
                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                                   <div className="space-y-1.5">
                                     <div className="flex items-center gap-2">
-                                      <h3 className="font-bold text-gray-900">
+                                      <h3 className="font-bold text-gray-900 dark:text-foreground">
                                         {booking.hall?.name || 'Noma\'lum to\'yxona'}
                                       </h3>
                                       <Badge className={status.className}>{status.label}</Badge>
                                     </div>
-                                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+                                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600 dark:text-muted-foreground">
                                       <div className="flex items-center gap-1">
                                         <CalendarDays className="w-3.5 h-3.5 text-rose-400" />
                                         {formatDate(booking.bookingDate)}
@@ -220,11 +220,11 @@ export default function OwnerBookingsPage() {
                                       </div>
                                     </div>
                                     {booking.customer && (
-                                      <p className="text-sm text-gray-500">
+                                      <p className="text-sm text-gray-500 dark:text-muted-foreground">
                                         Mijoz: {booking.customer.firstName} {booking.customer.lastName}
                                       </p>
                                     )}
-                                    <p className="text-xs text-gray-400">
+                                    <p className="text-xs text-gray-400 dark:text-muted-foreground">
                                       Oldindan to&apos;lov: {formatPrice(booking.advancePayment)}
                                     </p>
                                   </div>
@@ -234,7 +234,7 @@ export default function OwnerBookingsPage() {
                                         <Button
                                           variant="outline"
                                           size="sm"
-                                          className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+                                          className="text-red-600 border-red-200 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-700"
                                           disabled={cancellingId === booking.bookingId}
                                         >
                                           <XCircle className="w-4 h-4 mr-1" />

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useAppStore } from '@/lib/store'
 import { api } from '@/lib/api'
-import { toast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -43,10 +43,7 @@ export default function LoginForm() {
         navigateTo('halls')
       }
 
-      toast({
-        title: 'Welcome back!',
-        description: `Logged in as ${data.user.firstName} ${data.user.lastName}`,
-      })
+      toast.success(`Welcome back! Logged in as ${data.user.firstName} ${data.user.lastName}`)
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed'
 
@@ -64,11 +61,7 @@ export default function LoginForm() {
           if (errorData.userId) {
             setOtpUserId(errorData.userId)
             navigateTo('verify-otp')
-            toast({
-              title: 'Email not verified',
-              description: 'Please verify your email to continue',
-              variant: 'destructive',
-            })
+            toast.error('Email not verified. Please verify your email to continue.')
             return
           }
         } catch {

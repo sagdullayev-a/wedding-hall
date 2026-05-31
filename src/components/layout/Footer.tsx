@@ -8,13 +8,13 @@ export default function Footer() {
   const { navigateTo } = useAppStore()
 
   return (
-    <footer className="mt-auto border-t border-rose-100 bg-rose-950 text-rose-100">
+    <footer className="mt-auto border-t border-rose-100 dark:border-rose-900/30 bg-rose-950 dark:bg-rose-950 text-rose-100">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-800/50 border border-rose-700/50">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-800/50 dark:bg-rose-800/30 border border-rose-700/50 dark:border-rose-700/30">
                 <Heart className="h-4 w-4 text-rose-400 fill-rose-400" />
               </div>
               <span className="text-lg font-bold tracking-tight text-rose-50">
@@ -97,7 +97,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <Separator className="my-8 bg-rose-800/50" />
+        <Separator className="my-8 bg-rose-800/50 dark:bg-rose-800/30" />
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-rose-400/60">

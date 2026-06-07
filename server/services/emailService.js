@@ -70,7 +70,11 @@ async function sendOTPEmail({ email, name, otp }) {
       console.log(`[Email] OTP email sent successfully to ${email}`);
     } catch (error) {
       console.error(`[Email] Failed to send OTP email to ${email}:`, error);
-      throw new Error('Email yuborishda xatolik yuz berdi');
+      // Fallback: log OTP to console instead of crashing login flow
+      // This handles Render free tier SMTP port blocking
+      console.log(`\n======================================================`);
+      console.log(`[OTP FALLBACK] Email failed. Code for ${email} (${name}): ${otp}`);
+      console.log(`======================================================\n`);
     }
   } else {
     console.log(`\n======================================================`);

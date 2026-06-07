@@ -1,20 +1,7 @@
-const nodemailer = require('nodemailer');
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
-const EMAIL_USER = process.env.EMAIL_USER;
-const EMAIL_PASS = process.env.EMAIL_PASS;
-
-let transporter;
-
-if (EMAIL_USER && EMAIL_PASS) {
-  transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: EMAIL_USER,
-      pass: EMAIL_PASS,
-    },
-  });
-} else {
-  console.warn('⚠️ WARNING: EMAIL_USER and EMAIL_PASS are not set. OTP emails will be logged to console only.');
+if (!RESEND_API_KEY) {
+  console.warn('⚠️ WARNING: RESEND_API_KEY is not set. OTP emails will be logged to console only.');
 }
 
 async function sendOTPEmail({ email, name, otp }) {
@@ -59,22 +46,33 @@ async function sendOTPEmail({ email, name, otp }) {
 </html>
   `;
 
-  if (transporter) {
+  if (RESEND_API_KEY) {
     try {
-      await transporter.sendMail({
-        from: `"Wedding Hall Platform" <${EMAIL_USER}>`,
-        to: email,
-        subject: 'Wedding Hall Platform OTP Verification',
-        html: htmlContent,
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: 'Wedding Hall Platform <onboarding@resend.dev>',
+          to: [email],
+          subject: 'Wedding Hall Platform OTP Verification',
+          html: htmlContent,
+        }),
       });
-      console.log(`[Email] OTP email sent successfully to ${email}`);
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error(`[Email] Resend API error:`, data);
+        throw new Error(data.message || 'Email yuborishda xatolik yuz berdi');
+      }
+
+      console.log(`[Email] OTP email sent successfully to ${email} via Resend`);
     } catch (error) {
       console.error(`[Email] Failed to send OTP email to ${email}:`, error);
-      // Fallback: log OTP to console instead of crashing login flow
-      // This handles Render free tier SMTP port blocking
-      console.log(`\n======================================================`);
-      console.log(`[OTP FALLBACK] Email failed. Code for ${email} (${name}): ${otp}`);
-      console.log(`======================================================\n`);
+      throw new Error('Email yuborishda xatolik yuz berdi');
     }
   } else {
     console.log(`\n======================================================`);

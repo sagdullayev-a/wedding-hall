@@ -1,7 +1,20 @@
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const nodemailer = require('nodemailer');
 
-if (!RESEND_API_KEY) {
-  console.warn('⚠️ WARNING: RESEND_API_KEY is not set. OTP emails will be logged to console only.');
+const EMAIL_USER = process.env.EMAIL_USER;
+const EMAIL_PASS = process.env.EMAIL_PASS;
+
+let transporter;
+
+if (EMAIL_USER && EMAIL_PASS) {
+  transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: EMAIL_USER,
+      pass: EMAIL_PASS,
+    },
+  });
+} else {
+  console.warn('⚠️ WARNING: EMAIL_USER and EMAIL_PASS are not set. OTP emails will be logged to console only.');
 }
 
 async function sendOTPEmail({ email, name, otp }) {
@@ -46,40 +59,18 @@ async function sendOTPEmail({ email, name, otp }) {
 </html>
   `;
 
-  if (RESEND_API_KEY) {
+  if (transporter) {
     try {
-      const response = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${RESEND_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: 'Wedding Hall Platform <onboarding@resend.dev>',
-          to: [email],
-          subject: 'Wedding Hall Platform OTP Verification',
-          html: htmlContent,
-        }),
+      await transporter.sendMail({
+        from: `"Wedding Hall Platform" <${EMAIL_USER}>`,
+        to: email,
+        subject: 'Wedding Hall Platform OTP Verification',
+        html: htmlContent,
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error(`[Email] Resend API error:`, data);
-        // Fallback: if Resend can't deliver (e.g., free tier restriction), log OTP
-        console.log(`\n======================================================`);
-        console.log(`[OTP FALLBACK] Email failed for ${email} (${name}): ${otp}`);
-        console.log(`======================================================\n`);
-        return; // Don't crash login flow
-      }
-
-      console.log(`[Email] OTP email sent successfully to ${email} via Resend`);
+      console.log(`[Email] OTP email sent successfully to ${email}`);
     } catch (error) {
       console.error(`[Email] Failed to send OTP email to ${email}:`, error);
-      // Fallback: log OTP to console so login doesn't break
-      console.log(`\n======================================================`);
-      console.log(`[OTP FALLBACK] Email failed for ${email} (${name}): ${otp}`);
-      console.log(`======================================================\n`);
+      throw new Error('Email yuborishda xatolik yuz berdi');
     }
   } else {
     console.log(`\n======================================================`);

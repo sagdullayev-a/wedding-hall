@@ -1,20 +1,8 @@
-const nodemailer = require('nodemailer');
+const BREVO_API_KEY = process.env.BREVO_API_KEY;
+const EMAIL_USER = process.env.EMAIL_USER || 'azizhons.agdullayevv@gmail.com';
 
-const EMAIL_USER = process.env.EMAIL_USER;
-const EMAIL_PASS = process.env.EMAIL_PASS;
-
-let transporter;
-
-if (EMAIL_USER && EMAIL_PASS) {
-  transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: EMAIL_USER,
-      pass: EMAIL_PASS,
-    },
-  });
-} else {
-  console.warn('⚠️ WARNING: EMAIL_USER and EMAIL_PASS are not set. OTP emails will be logged to console only.');
+if (!BREVO_API_KEY) {
+  console.warn('⚠️ WARNING: BREVO_API_KEY is not set. OTP emails will be logged to console only.');
 }
 
 async function sendOTPEmail({ email, name, otp }) {
@@ -43,7 +31,7 @@ async function sendOTPEmail({ email, name, otp }) {
       <h1>Wedding Hall Booking Platform</h1>
     </div>
     <div class="content">
-      <div class="greeting">Assalomu alaykum, ${name}!</div>
+      <div class="greeting">Assalomu alaykum, ${name || 'Foydalanuvchi'}!</div>
       <p>Tizimga kirish yoki emailni tasdiqlash uchun vaqtinchalik bir martalik tasdiqlash kodini (OTP) taqdim etamiz:</p>
       <div class="otp-box">
         <div class="otp-code">${otp}</div>
@@ -59,15 +47,39 @@ async function sendOTPEmail({ email, name, otp }) {
 </html>
   `;
 
-  if (transporter) {
+  if (BREVO_API_KEY) {
     try {
-      await transporter.sendMail({
-        from: `"Wedding Hall Platform" <${EMAIL_USER}>`,
-        to: email,
-        subject: 'Wedding Hall Platform OTP Verification',
-        html: htmlContent,
+      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'accept': 'application/json',
+          'api-key': BREVO_API_KEY,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          sender: {
+            name: 'Wedding Hall Platform',
+            email: EMAIL_USER,
+          },
+          to: [
+            {
+              email: email,
+              name: name || email,
+            }
+          ],
+          subject: 'Wedding Hall Platform OTP Verification',
+          htmlContent: htmlContent,
+        }),
       });
-      console.log(`[Email] OTP email sent successfully to ${email}`);
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error(`[Email] Brevo API error:`, data);
+        throw new Error(data.message || 'Email yuborishda xatolik yuz berdi');
+      }
+
+      console.log(`[Email] OTP email sent successfully to ${email} via Brevo`);
     } catch (error) {
       console.error(`[Email] Failed to send OTP email to ${email}:`, error);
       throw new Error('Email yuborishda xatolik yuz berdi');
